@@ -3,7 +3,7 @@
     <el-container>
       <el-header><Nav /></el-header>
       <el-container>
-        <el-aside width="200px">这里放索引</el-aside>
+        <el-aside width="200px"><Aside /></el-aside>
         <el-main>
           <router-view />
         </el-main>
@@ -15,10 +15,12 @@
 <script>
 // @ is an alias to /src
 import Nav from "@/components/Nav";
+import Aside from "@/components/Aside";
 export default {
   name: "Home",
   components: {
     Nav,
+    Aside,
   },
 };
 </script>

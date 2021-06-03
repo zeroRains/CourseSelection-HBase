@@ -1,5 +1,9 @@
 <template>
-  <div class="Login">这里是登录页面</div>
+  <div class="Login">
+    <div class="main">
+      <div class=""></div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -7,3 +11,11 @@ export default {
   name: "Login",
 };
 </script>
+
+
+<style lang="sass">
+.main
+  width: 750px
+  height: 450px
+  background-color: red
+</style>
