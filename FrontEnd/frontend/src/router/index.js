@@ -25,7 +25,7 @@ const routes = [
         path:'/choose',
         name:'Choose',
         component:()=>import("../views/Home/Choose.vue")
-      }
+      },
     ]
   }
 ]
