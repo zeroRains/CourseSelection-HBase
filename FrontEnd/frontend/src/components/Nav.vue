@@ -23,7 +23,7 @@ export default {
   name: "Nav",
   data: () => {
     return {
-      is_login: true,
+      is_login: false,
       username: "小明",
     };
   },
@@ -32,6 +32,8 @@ export default {
       this.is_login = false;
     },
     login() {
+      // 先跳转到登录页
+      this.$router.push("/login");
       // 这里要先跳转到登录页，然后进行登录
       // 确认登录成功后才进行修改
       this.is_login = true;
