@@ -52,5 +52,13 @@ export default {
 .name {
   font-size: 30px;
   font-weight: bold;
+  color: #fff;
+  -webkit-text-stroke: 1px #969696;
+}
+.status {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  -webkit-text-stroke: 0.5px #969696;
 }
 </style>

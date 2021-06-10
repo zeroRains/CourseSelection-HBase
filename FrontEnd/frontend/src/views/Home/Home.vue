@@ -27,7 +27,7 @@ export default {
 <style lang="scss">
 .el-header,
 .el-footer {
-  background-color: #b3c0d1;
+  background-color: #009e9e;
   color: #333;
   text-align: center;
   line-height: 60px;

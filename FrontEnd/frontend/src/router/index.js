@@ -22,9 +22,43 @@ const routes = [
     component:()=>import("../views/Home/Home.vue"),
     children:[
       {
-        path:'/choose',
-        name:'Choose',
-        component:()=>import("../views/Home/Choose.vue")
+        path:'/person',
+        name:'person',
+        component:()=>import("../views/Home/Person/Info.vue"),
+      },{
+        path: '/person/change',
+        name: 'change',
+        component: () => import('../views/Home/Person/Change.vue')
+      },
+      {
+        path: '/person/info',
+        name: 'info',
+        component: () => import('../views/Home/Person/Info.vue')
+      },
+      {
+        path: '/person/score',
+        name: 'score',
+        component: () => import('../views/Home/Person/Score.vue')
+      },
+      {
+        path:'/course',
+        name:'course',
+        component:()=>import("../views/Home/Course/Choose.vue"),
+      },
+      {
+        path: '/course/choose',
+        name: 'choose',
+        component: () => import('../views/Home/Course/Choose.vue')
+      },
+      {
+        path: '/course/check',
+        name: 'check',
+        component: () => import('../views/Home/Course/Check.vue')
+      },
+      {
+        path: '/course/close',
+        name: 'close',
+        component: () => import('../views/Home/Course/Close.vue')
       },
     ]
   }
