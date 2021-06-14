@@ -1,7 +1,14 @@
 # CourseSelection
-- 开发者：1900301236谢浚霖、1900300819卢林军
 
-## Important!!!!
+## 前端界面
+
+### 任务列表：
+
+1. 登录界面（实现教师端登录与学生端登录）
+2. 
+
+## important!!!!
+
 ```
 版权所有（c）2021 PommesPeter/ZeroRains
 
