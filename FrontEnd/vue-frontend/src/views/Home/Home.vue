@@ -3,10 +3,14 @@
     <el-container>
       <el-header><Nav /></el-header>
       <el-container>
+
         <el-aside width="200px"
           ><Aside v-if="is_student" />
           <AsideTeacher v-else />
         </el-aside>
+
+        <el-aside width="200px"><Aside /></el-aside>
+
         <el-main>
           <router-view />
         </el-main>
@@ -19,11 +23,14 @@
 // @ is an alias to /src
 import Nav from "@/components/Nav";
 import Aside from "@/components/Aside";
+
 import AsideTeacher from "@/components/AsideTeacher";
+
 export default {
   name: "Home",
   components: {
     Nav,
+
     AsideTeacher,
     Aside,
   },
@@ -34,6 +41,10 @@ export default {
         window.localStorage.getItem("is_student") == "true" ? true : false,
     };
   },
+
+    Aside,
+  },
+
 };
 </script>
 <style lang="scss">

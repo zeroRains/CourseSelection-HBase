@@ -60,6 +60,7 @@ const routes = [
         name: 'close',
         component: () => import('../views/Home/Course/Close.vue')
       },
+
       {
         path: '/course/close',
         name: 'close',
@@ -94,6 +95,7 @@ const routes = [
         name: 'teacherdelcourse',
         component: () => import('../views/Home/Teacher/Course/DelCourse.vue')
       },
+
     ]
   }
 ]
