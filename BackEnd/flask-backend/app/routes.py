@@ -47,3 +47,88 @@ def login(name, passwd):
 @app.route("/stu/getStuInfo")
 def getStuInfo():
     pass
+
+
+@app.route("/stu/getStuDept")
+def getStuDept():
+    pass
+
+
+@app.route("/stu/updateStuInfo")
+def updateStuInfo():
+    pass
+
+
+@app.route("/stu/getStuScore")
+def getStuScore():
+    pass
+
+
+@app.route("/stu/getStuTable")
+def getStuTable():
+    pass
+
+
+@app.route("/stu/addStuTabel")
+def addStuTabel():
+    pass
+
+
+@app.route("/teacher/teacherLogin")
+def teacherLogin():
+    pass
+
+
+@app.route("/teacher/getTeacherInfo")
+def getTeacherInfo():
+    pass
+
+
+@app.route("/teacher/updateTeacherInfo")
+def updateTeacherInfo():
+    pass
+
+
+@app.route("/teacher/addStuScore")
+def addStuScore():
+    pass
+
+
+@app.route("/teacher/addStuScoreWithFile")
+def addStuScoreWithFile():
+    pass
+
+
+@app.route("/teacher/getStuScores")
+def getStuScores():
+    pass
+
+
+@app.route("/teacher/delCourseScheduleTable")
+def delCourseScheduleTable():
+    pass
+
+
+@app.route("/teacher/delCourse")
+def delCourse():
+    pass
+
+
+@app.route("/teacher/addNewCourseSchedule")
+def addNewCourseSchedule():
+    pass
+
+
+@app.route("/teacher/getCourseScheduleTable")
+def getCourseScheduleTable():
+    pass
+
+
+@app.route("/teacher/addNewCourse")
+def addNewCourse():
+    pass
+
+
+@app.route("/teacher/getCourseTable")
+def getCourseTable():
+    pass
