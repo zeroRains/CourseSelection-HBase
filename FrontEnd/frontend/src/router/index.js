@@ -60,6 +60,40 @@ const routes = [
         name: 'close',
         component: () => import('../views/Home/Course/Close.vue')
       },
+      {
+        path: '/course/close',
+        name: 'close',
+        component: () => import('../views/Home/Course/Close.vue')
+      },
+      {
+        path: '/teacher/info',
+        name: 'teacherinfo',
+        component: () => import('../views/Home/Teacher/Info/Info.vue')
+      },{
+        path: '/teacher/change',
+        name: 'teacherchange',
+        component: () => import('../views/Home/Teacher/Info/Change.vue')
+      },{
+        path: '/teacher/score',
+        name: 'teacherscore',
+        component: () => import('../views/Home/Teacher/Score/Score.vue')
+      },{
+        path: '/teacher/course',
+        name: 'teachercourse',
+        component: () => import('../views/Home/Teacher/Course/Course.vue')
+      },{
+        path: '/teacher/courseschedule',
+        name: 'teachercourseschedule',
+        component: () => import('../views/Home/Teacher/Course/CourseSchedule.vue')
+      },{
+        path: '/teacher/delcourseschedule',
+        name: 'teacherdelcourseschedule',
+        component: () => import('../views/Home/Teacher/Course/DelCourseSchedule.vue')
+      },{
+        path: '/teacher/delcourse',
+        name: 'teacherdelcourse',
+        component: () => import('../views/Home/Teacher/Course/DelCourse.vue')
+      },
     ]
   }
 ]
