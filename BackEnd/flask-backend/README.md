@@ -1,5 +1,12 @@
 # Flask Backend
 
+## Usage
+
+Runing command to run the backend
+```shell
+flask run
+```
+
 ## 工作日志
 
 ### 2021.6.14
