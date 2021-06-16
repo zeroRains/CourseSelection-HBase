@@ -20,7 +20,7 @@ def error_page():
 
 
 @app.route('/stu/stuLogin')
-def login(username, passwd):
+def stuLogin(username, passwd):
     if not isinstance(username, str):
         username = str(username)
     if not isinstance(passwd, str):
@@ -38,32 +38,64 @@ def login(username, passwd):
     return userid
 
 
-@app.route("/stu/getStuInfo")
-def getStuInfo():
-    conn = psycopg2.connect(database="postgres", user="gaussdb",
+@app.route('/teacher/teacherLogin')
+def teacherLogin(username, passwd):
+    if not isinstance(username, str):
+        username = str(username)
+    if not isinstance(passwd, str):
+        passwd = str(passwd)
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    cursor = conn.cursor()
+    # process user info
+    userid = uuid.uuid3(uuid.NAMESPACE_DNS, username)
+    encrypt_passwd = md5(passwd)
+    cursor.execute(f"INSERT INTO teacher(workno, passwd, userid) values({username}, {encrypt_passwd}, {userid})")
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return userid
+
+
+@app.route("/stu/getStuInfo")
+def getStuInfo(sno):
+    stu_info_list = []
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                            password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    cursor.execute(f"select * from student where sno={sno}")
+    rows = cursor.fetchall()
+    for row in rows:
+        stu_info_list.append(
+            {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    cursor.close()
+    conn.close()
+    return str(stu_info_list)
 
 
 @app.route("/stu/getStuDept")
 def getStuDept():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
 
 
 @app.route("/stu/updateStuInfo")
-def updateStuInfo():
+def updateStuInfo(info: dict):
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    cursor = conn.cursor()
+    cursor.execute(
+        f"update student set sex={info['sex']}, age={info['age']}, birthday={info['birthday']} where sno={info['sno']}")
+    cursor.commit()
+    cursor.close()
+    conn.close()
+    return "success"
 
 
 @app.route("/stu/getStuScore")
 def getStuScore():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
 
 
 @app.route("/stu/getStuTable")
@@ -73,15 +105,8 @@ def getStuTable():
     pass
 
 
-@app.route("/stu/addStuTabel")
+@app.route("/stu/addStuTable")
 def addStuTabel():
-    conn = psycopg2.connect(database="postgres", user="gaussdb",
-                            password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
-
-
-@app.route("/teacher/teacherLogin")
-def teacherLogin():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     pass
@@ -95,10 +120,16 @@ def getTeacherInfo():
 
 
 @app.route("/teacher/updateTeacherInfo")
-def updateTeacherInfo():
+def updateTeacherInfo(info: dict):
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    cursor = conn.cursor()
+    cursor.execute(
+        f"update teacher set sex={info['sex']}, age={info['age']}, birthday={info['birthday']} where sno={info['sno']}")
+    cursor.commit()
+    cursor.close()
+    conn.close()
+    return "success"
 
 
 @app.route("/teacher/addStuScore")
