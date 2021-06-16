@@ -1,9 +1,9 @@
 # 从app模块中即从__init__.py中导入创建的app应用
 import uuid
+from hashlib import md5
 
 import psycopg2
 from flask import render_template
-from haslib import md5
 
 from app import app
 
@@ -19,12 +19,12 @@ def error_page():
     return render_template('404.html')
 
 
-@app.route('/stu/stuLogin')
-def stuLogin(username, passwd):
+@app.route('/stu/stuRegister')
+def stuRegister(username, birthday):
     if not isinstance(username, str):
         username = str(username)
-    if not isinstance(passwd, str):
-        passwd = str(passwd)
+    if not isinstance(birthday, str):
+        passwd = str(birthday)
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
@@ -36,6 +36,37 @@ def stuLogin(username, passwd):
     cursor.close()
     conn.close()
     return userid
+
+
+@app.route('/st/test/name=<name>&www=<www>', methods=['POST'])
+def test(name, www):
+    print(name, www)
+    return str(name) + str(www)
+
+
+@app.route('/stu/stuLogin/sno=<sno>&passwd=<passwd>', methods=['POST'])
+def stuLogin(sno, passwd):
+    userid = None
+    db_passwd = None
+    if not isinstance(sno, str):
+        sno = str(sno)
+    if not isinstance(passwd, str):
+        passwd = str(passwd)
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                            password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    # process user info
+    cursor.execute(f"select passwd, userid from student where sno={sno}")
+    rows = cursor.fetchall()
+    for row in rows:
+        db_passwd = row[0]
+        userid = row[1]
+    cursor.close()
+    conn.close()
+    if db_passwd == passwd:
+        return userid
+    else:
+        return "failure"
 
 
 @app.route('/teacher/teacherLogin')
@@ -106,17 +137,26 @@ def getStuTable():
 
 
 @app.route("/stu/addStuTable")
-def addStuTabel():
+def addStuTable():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     pass
 
 
 @app.route("/teacher/getTeacherInfo")
-def getTeacherInfo():
-    conn = psycopg2.connect(database="postgres", user="gaussdb",
+def getTeacherInfo(workno):
+    teacher_info_list = []
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    cursor = conn.cursor()
+    cursor.execute(f"select * from teacher where workno={workno}")
+    rows = cursor.fetchall()
+    for row in rows:
+        teacher_info_list.append(
+            {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    cursor.close()
+    conn.close()
+    return str(teacher_info_list)
 
 
 @app.route("/teacher/updateTeacherInfo")
