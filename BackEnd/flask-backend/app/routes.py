@@ -1,8 +1,10 @@
 # 从app模块中即从__init__.py中导入创建的app应用
+from haslib import md5
 from app import app
 from flask import render_template
 
 import psycopg2
+import uuid
 
 
 # 建立路由，通过路由可以执行其覆盖的方法，可以多个路由指向同一个方法。
@@ -17,11 +19,19 @@ def error_page():
 
 
 @app.route('/stu/stuLogin')
-def login(name, passwd):
-    userid = ""
+def login(username, passwd):
+    if not isinstance(username, str):
+        username = str(username)
+    if not isinstance(passwd, str):
+        passwd = str(passwd)
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
+
+
+    userid = uuid.uuid3(uuid.NAMESPACE_DNS, username)
+    encrypt_passwd = md5(passwd)
+
     cursor.execute("CREATE TABLE test_conn(id int, name text)")
     cursor.execute("INSERT INTO test_conn values(1,'haha')")
     # 提交SQL命令
