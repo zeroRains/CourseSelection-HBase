@@ -24,7 +24,6 @@ def error_page():
 @app.route('/stu/stuRegister/sno=<sno>&name=<name>&passwd=<passwd>', methods=['GET', 'POST'])
 def stuRegister(sno, name, passwd):
     m = md5()
-    userid = None
     if not isinstance(sno, str):
         sno = str(sno)
     if not isinstance(passwd, str):
@@ -39,7 +38,7 @@ def stuRegister(sno, name, passwd):
         m.update(passwd.encode("utf-8"))  # md5加密密码
         encrypt_passwd = m.hexdigest()
         cursor.execute(
-            f"insert into test.student(sno, name, passwd, userid) values('{sno}', '{name}', '{encrypt_passwd}', '{userid}')")
+            f"insert into student(sno, name, passwd, userid) values('{sno}', '{name}', '{encrypt_passwd}', '{userid}')")
         conn.commit()
         cursor.close()
         conn.close()
@@ -62,7 +61,7 @@ def stuLogin(sno, passwd):
         conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                                 password="PommesPeter@123", host="10.0.0.3", port="15432")
         cursor = conn.cursor()
-        cursor.execute(f"select passwd, userid from test.student where sno={sno}")
+        cursor.execute(f"select passwd, userid from student where sno={sno}")
         rows = cursor.fetchall()
         for row in rows:
             db_passwd = row[0]
@@ -99,7 +98,7 @@ def teacherRegister(work_no, name, passwd):
         m.update(passwd.encode("utf-8"))  # md5加密密码
         encrypt_passwd = m.hexdigest()
         cursor.execute(
-            f"insert into test.teacher(work_no, name, passwd, userid) values('{work_no}', '{name}', '{encrypt_passwd}', '{userid}')")
+            f"insert into teacher(work_no, name, passwd, userid) values('{work_no}', '{name}', '{encrypt_passwd}', '{userid}')")
         conn.commit()
         cursor.close()
         conn.close()
@@ -122,7 +121,7 @@ def teacherLogin(work_no, passwd):
         conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                                 password="PommesPeter@123", host="10.0.0.3", port="15432")
         cursor = conn.cursor()
-        cursor.execute(f"select passwd, userid from test.teacher where work_no={work_no}")
+        cursor.execute(f"select passwd, userid from teacher where work_no={work_no}")
         rows = cursor.fetchall()
         for row in rows:
             db_passwd = row[0]
@@ -146,7 +145,7 @@ def getStuInfo(userid):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from test.student where userid='{userid}'")
+    cursor.execute(f"select * from student where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
@@ -161,17 +160,17 @@ def getStuInfo(userid):
     return {"status": "success", "data": stu_info_list}
 
 
-@app.route("/stu/getStuDept")
-def getStuDept():
-    stu_info_list = []
+@app.route("/stu/getStuDept/userid=<userid>")
+def getStuDept(userid):
+    stu_dept_list = []
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from test.student where userid='{userid}'")
+    cursor.execute(f"select * from student where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
-            stu_info_list.append(
+            stu_dept_list.append(
                 {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
     else:
         cursor.close()
@@ -179,7 +178,7 @@ def getStuDept():
         return {"status": "failure", "data": []}
     cursor.close()
     conn.close()
-    return {"status": "success", "data": stu_info_list}
+    return {"status": "success", "data": stu_dept_list}
 
 
 @app.route("/stu/updateStuInfo/info=<info>")
@@ -203,7 +202,7 @@ def getStuScore(userid):
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from test.student where userid='{userid}'")
+    cursor.execute(f"select * from student where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
@@ -224,7 +223,7 @@ def getStuTable():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from test.student where userid='{table}'")
+    cursor.execute(f"select * from student where userid='{table}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
@@ -252,7 +251,7 @@ def getTeacherInfo(userid):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from test.teacher where userid='{userid}'")
+    cursor.execute(f"select * from teacher where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
@@ -302,7 +301,7 @@ def getStuScores(userid):
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from test.student where userid='{userid}'")
+    cursor.execute(f"select * from student where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
@@ -344,7 +343,7 @@ def getCourseScheduleTable(userid):
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from test.student where userid='{userid}'")
+    cursor.execute(f"select * from student where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
@@ -373,7 +372,7 @@ def getCourseTable(userid):
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from test.student where userid='{userid}'")
+    cursor.execute(f"select * from student where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
