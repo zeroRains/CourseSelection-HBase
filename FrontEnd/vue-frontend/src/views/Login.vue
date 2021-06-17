@@ -58,12 +58,13 @@
 </template>
 
 <script>
+// import axios from "axios";
 export default {
   name: "Login",
   data() {
     return {
       ruleForm: {
-        user: "admin",
+        user: "1900301236",
         password: "123456",
         resource: "学生端",
       },
@@ -91,16 +92,49 @@ export default {
   },
   methods: {
     login() {
-      this.$message({
-        message:
-          this.ruleForm.resource +
-          "  name:" +
-          this.ruleForm.user +
-          "  password:" +
-          this.ruleForm.password,
-        type: "success",
-      });
-      this.$router.push("/");
+      if (this.ruleForm.resource == "学生端") {
+        this.$axios
+          .post(
+            "/stu/stuLogin/sno=" +
+              this.ruleForm.user +
+              "&passwd=" +
+              this.ruleForm.password
+          )
+          .then((res) => {
+            if (res.data.status == "success") {
+              window.localStorage.setItem("userid", res.data.data);
+              window.localStorage.setItem("is_student", "true");
+              this.$message({
+                message: "登录成功！欢迎使用课程选择系统！",
+                type: "success",
+              });
+              this.$router.push("/");
+            } else {
+              this.$message.error("帐号或者密码或者身份错误!");
+            }
+          });
+      } else {
+        this.$axios
+          .post(
+            "/teacher/teacherLogin/sno=" +
+              this.ruleForm.user +
+              "&passwd=" +
+              this.ruleForm.password
+          )
+          .then((res) => {
+            if (res.data.status == "success") {
+              window.localStorage.setItem("userid", res.data.data);
+              window.localStorage.setItem("is_student", "false");
+              this.$message({
+                message: "登录成功！欢迎使用课程选择系统！",
+                type: "success",
+              });
+              this.$router.push("/");
+            } else {
+              this.$message.error("帐号或者密码或者身份错误!");
+            }
+          });
+      }
     },
   },
 };
