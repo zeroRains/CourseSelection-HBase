@@ -174,7 +174,7 @@ def updateStuInfo(info):
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"update student set sex={info['sex']}, age={info['age']}, birthday={info['birthday']} where sno={info['sno']}")
+        f"update student set name={info_list[1]}, sex={info_list[2]}, age={info_list[3]}, birthday={info_list[4]} where sno={info_list[0]}")
     cursor.commit()
     cursor.close()
     conn.close()
