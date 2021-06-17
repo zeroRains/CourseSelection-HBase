@@ -34,8 +34,8 @@ def stuRegister(sno, name, passwd):
         conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                                 password="PommesPeter@123", host="10.0.0.3", port="15432")
         cursor = conn.cursor()
-        userid = uuid.uuid3(uuid.NAMESPACE_DNS, sno)
-        m.update(passwd.encode("utf-8"))
+        userid = uuid.uuid3(uuid.NAMESPACE_DNS, sno)  # 用uuid生成userid
+        m.update(passwd.encode("utf-8"))  # md5加密密码
         encrypt_passwd = m.hexdigest()
         cursor.execute(
             f"insert into test.student(sno, name, passwd, userid) values('{sno}', '{name}', '{encrypt_passwd}', '{userid}')")
@@ -44,8 +44,8 @@ def stuRegister(sno, name, passwd):
         conn.close()
     except Exception as e:
         traceback.print_exc()
-        return "Register failure"
-    return str(userid)
+        return {"status": "failure", "data": []}
+    return {"status": "success", "data": str(userid)}
 
 
 @app.route('/stu/stuLogin/sno=<sno>&passwd=<passwd>', methods=['POST'])
@@ -68,10 +68,10 @@ def stuLogin(sno, passwd):
             userid = row[1]
         cursor.close()
         conn.close()
-        m.update(passwd.encode("utf-8"))
+        m.update(passwd.encode("utf-8"))  # md5加密密码
         md_passwd = m.hexdigest()
         if db_passwd == md_passwd:
-            return userid
+            return {"status": "success", "data": str(userid)}
         else:
             return {"status": "failure", "data": []}
     except Exception as e:
@@ -79,50 +79,62 @@ def stuLogin(sno, passwd):
         return {"status": "error", "data": []}
 
 
-@app.route('/teacher/teacherRegister/work_no=<work_no>&passwd=<passwd>', methods=['POST'])
-def teacherRegister(work_no, passwd):
+@app.route('/teacher/teacherRegister/work_no=<work_no>&name=<name>&passwd=<passwd>', methods=['POST'])
+def teacherRegister(work_no, name, passwd):
     m = md5()
     if not isinstance(work_no, str):
         work_no = str(work_no)
     if not isinstance(passwd, str):
         passwd = str(passwd)
-    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
-                            password="PommesPeter@123", host="10.0.0.3", port="15432")
-    cursor = conn.cursor()
-    userid = uuid.uuid3(uuid.NAMESPACE_DNS, work_no)
-    m.update(passwd.encode("utf-8"))
-    encrypt_passwd = m.hexdigest()
-    cursor.execute(
-        f"insert into test.teacher(workno, passwd, userid) values('{work_no}', '{encrypt_passwd}', '{userid}')")
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return {"status": "success", "data": userid}
+    if not isinstance(name, str):
+        name = str(name)
+    try:
+        conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                                password="PommesPeter@123", host="10.0.0.3", port="15432")
+        cursor = conn.cursor()
+        userid = uuid.uuid3(uuid.NAMESPACE_DNS, work_no)  # 用uuid生成userid
+        m.update(passwd.encode("utf-8"))  # md5加密密码
+        encrypt_passwd = m.hexdigest()
+        cursor.execute(
+            f"insert into test.teacher(work_no, name, passwd, userid) values('{work_no}', '{name}', '{encrypt_passwd}', '{userid}')")
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        traceback.print_exc()
+        return {"status": "failure", "data": []}
+    return {"status": "success", "data": str(userid)}
 
 
 @app.route("/teacher/teacherRegister/work_no=<work_no>&passwd=<passwd>")
 def teacherLogin(work_no, passwd):
+    m = md5()
     userid = None
     db_passwd = None
     if not isinstance(work_no, str):
-        sno = str(work_no)
+        work_no = str(work_no)
     if not isinstance(passwd, str):
         passwd = str(passwd)
-    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
-                            password="PommesPeter@123", host="10.0.0.3", port="15432")
-    cursor = conn.cursor()
-    # process user info
-    cursor.execute(f"select passwd, userid from test.teacher where sno={sno}")
-    rows = cursor.fetchall()
-    for row in rows:
-        db_passwd = row[0]
-        userid = row[1]
-    cursor.close()
-    conn.close()
-    if db_passwd == passwd:
-        return {"status": "success", "data": userid}
-    else:
-        return {"status": "failure", "data": []}
+    try:
+        conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                                password="PommesPeter@123", host="10.0.0.3", port="15432")
+        cursor = conn.cursor()
+        cursor.execute(f"select passwd, userid from test.teacher where work_no={work_no}")
+        rows = cursor.fetchall()
+        for row in rows:
+            db_passwd = row[0]
+            userid = row[1]
+        cursor.close()
+        conn.close()
+        m.update(passwd.encode("utf-8"))
+        md_passwd = m.hexdigest()
+        if db_passwd == md_passwd:
+            return {"status": "failure", "data": userid}
+        else:
+            return {"status": "failure", "data": []}
+    except Exception as e:
+        traceback.print_exc()
+        return {"status": "error", "data": []}
 
 
 @app.route("/stu/getStuInfo/userid=<userid>", methods=['POST'])
