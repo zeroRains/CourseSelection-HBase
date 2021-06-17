@@ -4,6 +4,7 @@ import uuid
 from hashlib import md5
 
 import psycopg2
+from flask import Flask, request
 from flask import render_template
 
 from app import app
@@ -20,7 +21,7 @@ def error_page():
     return render_template('404.html')
 
 
-@app.route('/stu/stuRegister/sno=<sno>&name=<name>&passwd=<passwd>', methods=['POST'])
+@app.route('/stu/stuRegister/sno=<sno>&name=<name>&passwd=<passwd>', methods=['GET', 'POST'])
 def stuRegister(sno, name, passwd):
     m = md5()
     userid = None
@@ -48,7 +49,7 @@ def stuRegister(sno, name, passwd):
     return {"status": "success", "data": str(userid)}
 
 
-@app.route('/stu/stuLogin/sno=<sno>&passwd=<passwd>', methods=['POST'])
+@app.route('/stu/stuLogin/sno=<sno>&passwd=<passwd>', methods=['GET', 'POST'])
 def stuLogin(sno, passwd):
     m = md5()
     userid = None
@@ -196,8 +197,9 @@ def updateStuInfo(info):
     return {"status": "success", "data": []}
 
 
-@app.route("/stu/getStuScore")
-def getStuScore():
+@app.route("/stu/getStuScore/userid=<userid>")
+def getStuScore(userid):
+    score_info = []
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
@@ -205,7 +207,7 @@ def getStuScore():
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
-            stu_info_list.append(
+            score_info.append(
                 {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
     else:
         cursor.close()
@@ -213,19 +215,20 @@ def getStuScore():
         return {"status": "failure", "data": []}
     cursor.close()
     conn.close()
-    return {"status": "success", "data": stu_info_list}
+    return {"status": "success", "data": score_info}
 
 
 @app.route("/stu/getStuTable")
 def getStuTable():
+    table = []
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from test.student where userid='{userid}'")
+    cursor.execute(f"select * from test.student where userid='{table}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
-            stu_info_list.append(
+            table.append(
                 {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
     else:
         cursor.close()
@@ -233,7 +236,7 @@ def getStuTable():
         return {"status": "failure", "data": []}
     cursor.close()
     conn.close()
-    return {"status": "success", "data": stu_info_list}
+    return {"status": "success", "data": table}
 
 
 @app.route("/stu/addStuTable")
@@ -253,7 +256,7 @@ def getTeacherInfo(userid):
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
-            stu_info_list.append(
+            teacher_info_list.append(
                 {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
     else:
         cursor.close()
@@ -293,8 +296,9 @@ def addStuScoreWithFile():
     pass
 
 
-@app.route("/teacher/getStuScores")
-def getStuScores():
+@app.route("/teacher/getStuScores/userid=<userid>")
+def getStuScores(userid):
+    score_info = []
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
@@ -302,7 +306,7 @@ def getStuScores():
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
-            stu_info_list.append(
+            score_info.append(
                 {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
     else:
         cursor.close()
@@ -310,7 +314,7 @@ def getStuScores():
         return {"status": "failure", "data": []}
     cursor.close()
     conn.close()
-    return {"status": "success", "data": stu_info_list}
+    return {"status": "success", "data": score_info}
 
 
 @app.route("/teacher/delCourseScheduleTable")
@@ -334,8 +338,9 @@ def addNewCourseSchedule():
     pass
 
 
-@app.route("/teacher/getCourseScheduleTable")
-def getCourseScheduleTable():
+@app.route("/teacher/getCourseScheduleTable/<userid>")
+def getCourseScheduleTable(userid):
+    stu_course_list = []
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
@@ -343,15 +348,16 @@ def getCourseScheduleTable():
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
-            stu_info_list.append(
+            stu_course_list.append(
                 {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
     else:
         cursor.close()
         conn.close()
         return {"status": "failure", "data": []}
+
     cursor.close()
     conn.close()
-    return {"status": "success", "data": stu_info_list}
+    return {"status": "success", "data": stu_course_list}
 
 
 @app.route("/teacher/addNewCourse")
@@ -361,8 +367,9 @@ def addNewCourse():
     pass
 
 
-@app.route("/teacher/getCourseTable")
-def getCourseTable():
+@app.route("/teacher/getCourseTable/userid=<userid>")
+def getCourseTable(userid):
+    course_table = []
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
@@ -370,7 +377,7 @@ def getCourseTable():
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
-            stu_info_list.append(
+            course_table.append(
                 {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
     else:
         cursor.close()
@@ -378,4 +385,4 @@ def getCourseTable():
         return {"status": "failure", "data": []}
     cursor.close()
     conn.close()
-    return {"status": "success", "data": stu_info_list}
+    return {"status": "success", "data": course_table}
