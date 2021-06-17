@@ -162,8 +162,23 @@ def getStuInfo(userid):
 
 @app.route("/stu/getStuDept")
 def getStuDept():
+    stu_info_list = []
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    cursor.execute(f"select * from test.student where userid='{userid}'")
+    rows = cursor.fetchall()
+    if len(rows):
+        for row in rows:
+            stu_info_list.append(
+                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": stu_info_list}
 
 
 @app.route("/stu/updateStuInfo/info=<info>")
@@ -185,13 +200,40 @@ def updateStuInfo(info):
 def getStuScore():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    cursor.execute(f"select * from test.student where userid='{userid}'")
+    rows = cursor.fetchall()
+    if len(rows):
+        for row in rows:
+            stu_info_list.append(
+                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": stu_info_list}
 
 
 @app.route("/stu/getStuTable")
 def getStuTable():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    cursor = conn.cursor()
+    cursor.execute(f"select * from test.student where userid='{userid}'")
+    rows = cursor.fetchall()
+    if len(rows):
+        for row in rows:
+            stu_info_list.append(
+                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": stu_info_list}
 
 
 @app.route("/stu/addStuTable")
@@ -201,33 +243,40 @@ def addStuTable():
     pass
 
 
-@app.route("/teacher/getTeacherInfo")
-def getTeacherInfo(workno):
+@app.route("/teacher/getTeacherInfo/userid=<userid>", methods=['POST'])
+def getTeacherInfo(userid):
     teacher_info_list = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from teacher where workno={workno}")
+    cursor.execute(f"select * from test.teacher where userid='{userid}'")
     rows = cursor.fetchall()
-    for row in rows:
-        teacher_info_list.append(
-            {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    if len(rows):
+        for row in rows:
+            stu_info_list.append(
+                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
     cursor.close()
     conn.close()
-    return str(teacher_info_list)
+    return {"status": "success", "data": teacher_info_list}
 
 
-@app.route("/teacher/updateTeacherInfo")
-def updateTeacherInfo(info: dict):
+@app.route("/teacher/updateTeacherInfo/info=<info>")
+def updateTeacherInfo(info):
+    # userid name sex age birthday
+    info_list = info.split(",")
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"update teacher set sex={info['sex']}, age={info['age']}, birthday={info['birthday']} where sno={info['sno']}")
+        f"update student set name={info_list[1]}, sex={info_list[2]}, age={info_list[3]}, birthday={info_list[4]} where sno={info_list[0]}")
     cursor.commit()
     cursor.close()
     conn.close()
-    return "success"
+    return {"status": "success", "data": []}
 
 
 @app.route("/teacher/addStuScore")
@@ -248,7 +297,20 @@ def addStuScoreWithFile():
 def getStuScores():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    cursor = conn.cursor()
+    cursor.execute(f"select * from test.student where userid='{userid}'")
+    rows = cursor.fetchall()
+    if len(rows):
+        for row in rows:
+            stu_info_list.append(
+                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": stu_info_list}
 
 
 @app.route("/teacher/delCourseScheduleTable")
@@ -276,7 +338,20 @@ def addNewCourseSchedule():
 def getCourseScheduleTable():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    cursor = conn.cursor()
+    cursor.execute(f"select * from test.student where userid='{userid}'")
+    rows = cursor.fetchall()
+    if len(rows):
+        for row in rows:
+            stu_info_list.append(
+                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": stu_info_list}
 
 
 @app.route("/teacher/addNewCourse")
@@ -290,4 +365,17 @@ def addNewCourse():
 def getCourseTable():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    cursor = conn.cursor()
+    cursor.execute(f"select * from test.student where userid='{userid}'")
+    rows = cursor.fetchall()
+    if len(rows):
+        for row in rows:
+            stu_info_list.append(
+                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": stu_info_list}
