@@ -4,7 +4,6 @@ import uuid
 from hashlib import md5
 
 import psycopg2
-from flask import Flask, request
 from flask import render_template
 
 from app import app
@@ -139,18 +138,20 @@ def teacherLogin(work_no, passwd):
         return {"status": "error", "data": []}
 
 
-@app.route("/stu/getStuInfo/userid=<userid>", methods=['POST'])
+@app.route("/stu/getStuInfo/userid=<userid>", methods=['GET'])
 def getStuInfo(userid):
     stu_info_list = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from student where userid='{userid}'")
+    cursor.execute(f"select sno, sex, age, birthday, name, userid, classnum from student where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
+        print(rows)
         for row in rows:
             stu_info_list.append(
-                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+                {"sno": row[0], "sex": row[1], "age": row[2], "birthday": row[3], "name": row[4], "userid": row[5],
+                 "classnum": row[6]})
     else:
         cursor.close()
         conn.close()
@@ -166,7 +167,9 @@ def getStuDept(userid):
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from student where userid='{userid}'")
+    # 此处可优化
+    cursor.execute(
+        f"select college.name from student join class on student.classnum=class.num join college on class.collegenum=college.num where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
@@ -183,13 +186,13 @@ def getStuDept(userid):
 
 @app.route("/stu/updateStuInfo/info=<info>")
 def updateStuInfo(info):
-    # userid name sex age birthday
+    # userid sex age birthday
     info_list = info.split(",")
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"update student set name={info_list[1]}, sex={info_list[2]}, age={info_list[3]}, birthday={info_list[4]} where sno={info_list[0]}")
+        f"update student set sex={info_list[1]}, age={info_list[2]}, birthday={info_list[3]} where sno={info_list[0]}")
     cursor.commit()
     cursor.close()
     conn.close()
@@ -202,12 +205,12 @@ def getStuScore(userid):
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from student where userid='{userid}'")
+    cursor.execute(
+        f"select course.name, usual, exam, score from student join selection on student.sno=selection.sno join course on course.cno=selection.cno where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
-            score_info.append(
-                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+            score_info.append({"name": row[0], "usual": row[1], "exam": row[2], "score": row[3]})
     else:
         cursor.close()
         conn.close()
@@ -217,13 +220,13 @@ def getStuScore(userid):
     return {"status": "success", "data": score_info}
 
 
-@app.route("/stu/getStuTable")
-def getStuTable():
+@app.route("/stu/getStuTable/userid=<userid>")
+def getStuTable(userid):
     table = []
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from student where userid='{table}'")
+    cursor.execute(f"select * from student where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
