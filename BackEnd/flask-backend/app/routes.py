@@ -166,8 +166,10 @@ def getStuDept():
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
 
 
-@app.route("/stu/updateStuInfo")
-def updateStuInfo(info: dict):
+@app.route("/stu/updateStuInfo/info=<info>")
+def updateStuInfo(info):
+    # userid name sex age birthday
+    info_list = info.split(",")
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
