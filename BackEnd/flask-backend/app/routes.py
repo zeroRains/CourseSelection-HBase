@@ -68,8 +68,10 @@ def stuLogin(sno, passwd):
             userid = row[1]
         cursor.close()
         conn.close()
+
         m.update(passwd.encode("utf-8"))  # md5加密密码
         md_passwd = m.hexdigest()
+        print(db_passwd, md_passwd)
         if db_passwd == md_passwd:
             return {"status": "success", "data": str(userid)}
         else:
