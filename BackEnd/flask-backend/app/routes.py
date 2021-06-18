@@ -226,12 +226,13 @@ def getStuTable(userid):
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from student where userid='{userid}'")
+    cursor.execute(
+        f"select student.name, course.name, course.coursecode, course.credit,  from student join selection on student.sno=selection.sno join course on course.cno=selection.cno where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
             table.append(
-                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+                {"stu_name": row[0], "course_name": row[1], "coursecode": row[2], "credit": row[3]})
     else:
         cursor.close()
         conn.close()
@@ -254,12 +255,14 @@ def getTeacherInfo(userid):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from teacher where userid='{userid}'")
+    cursor.execute(
+        f"select tno, name, sex, birthday, age, position, college.name from teacher join college on teacher.collegenum=college.collegenum where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
             teacher_info_list.append(
-                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+                {"tno": row[0], "tname": row[1], "sex": row[2], "birthday": row[3], "age": row[4], "position": row[5],
+                 "college_name": row[6]})
     else:
         cursor.close()
         conn.close()
@@ -271,13 +274,13 @@ def getTeacherInfo(userid):
 
 @app.route("/teacher/updateTeacherInfo/info=<info>")
 def updateTeacherInfo(info):
-    # userid name sex age birthday
+    # userid name sex age birthday college_name
     info_list = info.split(",")
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"update student set name={info_list[1]}, sex={info_list[2]}, age={info_list[3]}, birthday={info_list[4]} where sno={info_list[0]}")
+        f"update teacher set name={info_list[1]}, sex={info_list[2]}, age={info_list[3]}, birthday={info_list[4]}, postion={info_list[5]}, collegenum={info_list[6]} where userid={info_list[0]}")
     cursor.commit()
     cursor.close()
     conn.close()
