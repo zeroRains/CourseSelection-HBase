@@ -1,0 +1,11 @@
+.el-input__inner {
+    font-size: 16px;
+    font-weight: bold;
+    cursor: not-allowed;
+}
+
+.el-input__inner:focus {
+    font-size: 16px;
+    font-weight: bold;
+    cursor: not-allowed;
+}
