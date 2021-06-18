@@ -64,7 +64,7 @@ export default {
   data() {
     return {
       ruleForm: {
-        user: "1900301236",
+        user: "1900100110",
         password: "123456",
         resource: "学生端",
       },
@@ -72,9 +72,9 @@ export default {
         user: [
           { required: true, message: "请输入用户名", trigger: "blur" },
           {
-            min: 6,
+            min: 5,
             max: 10,
-            message: "长度在 6 到 10 个字符",
+            message: "长度在 5 到 10 个字符",
             trigger: "blur",
           },
         ],
@@ -116,7 +116,7 @@ export default {
       } else {
         this.$axios
           .post(
-            "/teacher/teacherLogin/sno=" +
+            "/teacher/teacherLogin/tno=" +
               this.ruleForm.user +
               "&passwd=" +
               this.ruleForm.password

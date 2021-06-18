@@ -14,25 +14,39 @@
 export default {
   name: "Nav",
   data() {
+    var username = "";
+    // alert("o我测试一下");
+    if (window.localStorage.getItem("is_student") == "true") {
+      this.$axios
+        .get("stu/getStuInfo/userid=" + window.localStorage.getItem("userid"))
+        .then((res) => {
+          this.username = res.data.data[0].name;
+          // alert(this.username);
+        });
+    } else {
+      this.$axios
+        .post(
+          "teacher/getTeacherInfo/userid=" +
+            window.localStorage.getItem("userid")
+        )
+        .then((res) => {
+          this.username = res.data.data[0].tname + "老师";
+          // alert(this.username);
+        });
+    }
     return {
-      username: "",
+      username,
     };
-  },
-  mounted() {
-    this.$axios
-      .post("/getStuInfo/6fe4ad65-f590-390a-a6a1-123c022b01eb")
-      .then((res) => {
-        console.log(res);
-      });
   },
   methods: {
     login() {
       // 先跳转到登录页
       this.$router.push("/login");
-      // 这里要先跳转到登录页，然后进行登录
-
-      // 同时还要修改用户的名称
-      this.username = "";
+      this.$message({
+        message: "注销成功！",
+        type: "success",
+      });
+      window.localStorage.clear();
     },
   },
 };

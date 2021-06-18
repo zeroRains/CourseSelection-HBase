@@ -1,10 +1,67 @@
 <template>
-  <div class="Choose">这里是选课界面哦</div>
+  <div class="Choose">
+    <el-table
+      :header-row-style="{ lineHeight: '30px' }"
+      :data="
+        tableData.filter(
+          (data) =>
+            !search || data.name.toLowerCase().includes(search.toLowerCase())
+        )
+      "
+      style="width: 100%"
+    >
+      <el-table-column label="课程名称" prop="name"> </el-table-column>
+      <el-table-column label="课程代号" prop="date"> </el-table-column>
+      <el-table-column label="学分" prop="credit"> </el-table-column>
+      <el-table-column align="right">
+        <template slot="header">
+          <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
+        </template>
+        <template slot-scope="test">
+          <el-button type="primary" @click="handleEdit(test.$index, test.row)"
+            >选课</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 
 <script>
 export default {
   name: "Choose",
-  setup() {},
+  data() {
+    var tableData = [];
+    // close.log(tableData);
+    this.$axios.get("all/getCourseTable").then((res) => {
+      var temp = res.data.data;
+      for (let a of temp) {
+        // console.log(a.coursecode);
+        this.tableData.push({
+          name: a.name,
+          date: a.coursecode,
+          credit: a.credit,
+        });
+      }
+    });
+    return {
+      tableData,
+      search: "",
+    };
+  },
+  methods: {
+    handleEdit(index, row) {
+      // console.log(index);
+      // alert(row);
+      console.log(row);
+      // alert(row.credit);
+      // console.log(index, row);
+    },
+  },
 };
 </script>
+<style lang="scss" scoped>
+.el-table__header {
+  height: 40px;
+}
+</style>
