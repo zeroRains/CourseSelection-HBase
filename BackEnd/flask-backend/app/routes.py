@@ -208,7 +208,6 @@ def getStuTable(userid):
 def addStuTable():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
 
 
 @app.route("/teacher/getTeacherInfo/userid=<userid>", methods=['POST'])
@@ -218,7 +217,7 @@ def getTeacherInfo(userid):
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"select tno, name, sex, birthday, age, position, college.name from teacher join college on teacher.collegenum=college.collegenum where userid='{userid}'")
+        f"select tno, name, sex, birthday, age, position, college.name from teacher join college on teacher.collegenum=college.num where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
