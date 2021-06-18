@@ -206,10 +206,26 @@ def getStuTable(userid):
     return {"status": "success", "data": table}
 
 
-@app.route("/stu/addStuTable")
-def addStuTable():
+@app.route("/stu/addStuTable/userid=<userid>&cno=<cno>")
+def addStuTable(userid, cno):
+    """
+    选课接口
+    :return:
+    """
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    if userid == "" or userid is None or cno is None or cno == "":
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
+    else:
+        cursor.execute(f"")
+        cursor.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "success", "data": []}
+
 
 
 @app.route("/teacher/getTeacherInfo/userid=<userid>", methods=['POST'])
