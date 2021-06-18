@@ -144,7 +144,8 @@ def getStuInfo(userid):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select sno, sex, age, birthday, student.name, userid, classnum, college.name from student join class on class.num=student.classnum join college on class.collegenum=college.num where userid='{userid}'")
+    cursor.execute(
+        f"select sno, sex, age, birthday, student.name, userid, classnum, college.name from student join class on class.num=student.classnum join college on class.collegenum=college.num where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         print(rows)
@@ -309,7 +310,7 @@ def addNewCourseSchedule():
     pass
 
 
-@app.route("/teacher/getCourseScheduleTable", methods=["GET"])
+@app.route("/all/getCourseScheduleTable", methods=["GET"])
 def getCourseScheduleTable():
     stu_course_list = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
@@ -340,18 +341,19 @@ def addNewCourse():
     pass
 
 
-@app.route("/teacher/getCourseTable/userid=<userid>")
-def getCourseTable(userid):
+@app.route("/all/getCourseTable", methods=["GET"])
+def getCourseTable():
     course_table = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from student where userid='{userid}'")
+    cursor.execute(
+        f"select schedule.cno, schedule.semester, schedule.day, schedule.index, schedule.classroom, schedule.optional, schedule.selected, course.coursecode, course.name, course.credit, schedule.startweek, schedule.endweek from course join schedule on course.coursecode=schedule.coursecode")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
             course_table.append(
-                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+                {"cno": row[0], "semester": row[1], "day": row[2], "index": row[3], "classroom": row[4], "optional": row[5], "selected": row[6], "coursecode": row[7], "name": row[8], "credit": row[9], "startweek": row[10], "endweek": row[11]})
     else:
         cursor.close()
         conn.close()
