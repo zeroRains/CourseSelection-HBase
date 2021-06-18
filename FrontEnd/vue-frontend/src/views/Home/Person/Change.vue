@@ -1,5 +1,5 @@
 <template>
-  <div class="Change">这里是信息修改界面</div>
+  <div class="Change">这里是查看课程计划</div>
 </template>
 
 <script>

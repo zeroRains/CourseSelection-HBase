@@ -1,18 +1,10 @@
 <template>
   <div class="Nav">
     <div class="name">课程选择系统</div>
-    <div class="status" v-if="is_login">
-      {{ username }}，欢迎您进入课程选择系统
-    </div>
-    <div class="status" v-else>您还未登录，请先登录哦</div>
-    <div class="check" v-if="is_login">
-      <el-button @click="logout" style="font-size: 20px" type="primary"
-        >注销</el-button
-      >
-    </div>
-    <div class="check" v-else>
+    <div class="status">{{ username }}，欢迎您进入课程选择系统</div>
+    <div class="check">
       <el-button @click="login" style="font-size: 20px" type="primary"
-        >登录</el-button
+        >注销</el-button
       >
     </div>
   </div>
@@ -21,24 +13,40 @@
 <script>
 export default {
   name: "Nav",
-  data: () => {
+  data() {
+    var username = "";
+    // alert("o我测试一下");
+    if (window.localStorage.getItem("is_student") == "true") {
+      this.$axios
+        .get("stu/getStuInfo/userid=" + window.localStorage.getItem("userid"))
+        .then((res) => {
+          this.username = res.data.data[0].name;
+          // alert(this.username);
+        });
+    } else {
+      this.$axios
+        .post(
+          "teacher/getTeacherInfo/userid=" +
+            window.localStorage.getItem("userid")
+        )
+        .then((res) => {
+          this.username = res.data.data[0].tname + "老师";
+          // alert(this.username);
+        });
+    }
     return {
-      is_login: false,
-      username: "小明",
+      username,
     };
   },
   methods: {
-    logout() {
-      this.is_login = false;
-    },
     login() {
       // 先跳转到登录页
       this.$router.push("/login");
-      // 这里要先跳转到登录页，然后进行登录
-      // 确认登录成功后才进行修改
-      this.is_login = true;
-      // 同时还要修改用户的名称
-      this.username = "小王";
+      this.$message({
+        message: "注销成功！",
+        type: "success",
+      });
+      window.localStorage.clear();
     },
   },
 };
