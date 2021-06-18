@@ -161,21 +161,6 @@ def getStuInfo(userid):
     return {"status": "success", "data": stu_info_list}
 
 
-@app.route("/stu/updateStuInfo/info=<info>")
-def updateStuInfo(info):
-    # userid sex age birthday
-    info_list = info.split(",")
-    conn = psycopg2.connect(database="postgres", user="gaussdb",
-                            password="PommesPeter@123", host="10.0.0.3", port="15432")
-    cursor = conn.cursor()
-    cursor.execute(
-        f"update student set sex={info_list[1]}, age={info_list[2]}, birthday={info_list[3]} where sno={info_list[0]}")
-    cursor.commit()
-    cursor.close()
-    conn.close()
-    return {"status": "success", "data": []}
-
-
 @app.route("/stu/getStuScore/userid=<userid>")
 def getStuScore(userid):
     score_info = []
