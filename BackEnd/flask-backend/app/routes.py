@@ -130,7 +130,7 @@ def teacherLogin(tno, passwd):
         m.update(passwd.encode("utf-8"))
         md_passwd = m.hexdigest()
         if db_passwd == md_passwd:
-            return {"status": "failure", "data": userid}
+            return {"status": "success", "data": userid}
         else:
             return {"status": "failure", "data": []}
     except Exception as e:
@@ -159,21 +159,6 @@ def getStuInfo(userid):
     cursor.close()
     conn.close()
     return {"status": "success", "data": stu_info_list}
-
-
-@app.route("/stu/updateStuInfo/info=<info>")
-def updateStuInfo(info):
-    # userid sex age birthday
-    info_list = info.split(",")
-    conn = psycopg2.connect(database="postgres", user="gaussdb",
-                            password="PommesPeter@123", host="10.0.0.3", port="15432")
-    cursor = conn.cursor()
-    cursor.execute(
-        f"update student set sex={info_list[1]}, age={info_list[2]}, birthday={info_list[3]} where sno={info_list[0]}")
-    cursor.commit()
-    cursor.close()
-    conn.close()
-    return {"status": "success", "data": []}
 
 
 @app.route("/stu/getStuScore/userid=<userid>")
@@ -223,7 +208,6 @@ def getStuTable(userid):
 def addStuTable():
     conn = psycopg2.connect(database="postgres", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
 
 
 @app.route("/teacher/getTeacherInfo/userid=<userid>", methods=['POST'])
@@ -233,7 +217,7 @@ def getTeacherInfo(userid):
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"select tno, name, sex, birthday, age, position, college.name from teacher join college on teacher.collegenum=college.collegenum where userid='{userid}'")
+        f"select tno, name, sex, birthday, age, position, college.name from teacher join college on teacher.collegenum=college.num where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
