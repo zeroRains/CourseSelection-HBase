@@ -130,7 +130,7 @@ def teacherLogin(tno, passwd):
         m.update(passwd.encode("utf-8"))
         md_passwd = m.hexdigest()
         if db_passwd == md_passwd:
-            return {"status": "failure", "data": userid}
+            return {"status": "success", "data": userid}
         else:
             return {"status": "failure", "data": []}
     except Exception as e:
