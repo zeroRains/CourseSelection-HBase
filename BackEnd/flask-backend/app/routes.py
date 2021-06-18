@@ -268,7 +268,7 @@ def addStuScoreWithFile():
     pass
 
 
-@app.route("/all/getStuScores/userid=<userid>")
+@app.route("/teacher/getStuScores/userid=<userid>")
 def getStuScores(userid):
     score_info = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
