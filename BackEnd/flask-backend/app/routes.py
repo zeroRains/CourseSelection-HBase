@@ -222,7 +222,7 @@ def getStuScore(userid):
 @app.route("/stu/getStuTable/userid=<userid>", methods=["GET"])
 def getStuTable(userid):
     """
-    获取学生的课程表
+    获取学生的已选课程
     :param userid:
     :return:
     """
@@ -247,8 +247,8 @@ def getStuTable(userid):
     return {"status": "success", "data": table}
 
 
-@app.route("/stu/addStuTable/userid=<userid>&cno=<cno>")
-def addStuTable(userid, cno):
+@app.route("/stu/addStuCourse/userid=<userid>&cno=<cno>")
+def addStuCourse(userid, cno):
     """
     选课接口
     :return:
@@ -262,12 +262,13 @@ def addStuTable(userid, cno):
         return {"status": "failure", "data": []}
     else:
         cursor.execute(f"")
-        cursor.commit()
+        conn.commit()
         cursor.close()
         conn.close()
         return {"status": "success", "data": []}
 
 
+@app.route("/stu/isChoose")
 @app.route("/teacher/getTeacherInfo/userid=<userid>", methods=['POST'])
 def getTeacherInfo(userid):
     """
@@ -316,7 +317,7 @@ def updateTeacherInfo(info):
     cursor = conn.cursor()
     cursor.execute(
         f"update teacher set name={info_list[1]}, sex={info_list[2]}, age={info_list[3]}, birthday={info_list[4]}, postion={info_list[5]}, collegenum={info_list[6]} where userid={info_list[0]}")
-    cursor.commit()
+    conn.commit()
     cursor.close()
     conn.close()
     return {"status": "success", "data": []}
@@ -329,7 +330,7 @@ def addStuScore(cno, sno, usual, exam, score):
     cursor = conn.cursor()
     try:
         cursor.execute(f"update selection set usual={usual}, exam={exam}, score={score} where cno={cno} and sno={sno}")
-        cursor.commit()
+        conn.commit()
         cursor.close()
         conn.close()
         return {"status": "success", "data": []}
@@ -375,7 +376,7 @@ def getStuScores_stu(userid):
     return {"status": "success", "data": score_info}
 
 
-@app.route("/teacher/getStuScores/userid=<userid>")
+@app.route("/teacher/getStuScores/userid=<userid>", methods=["GET"])
 def getStuScores_teacher(userid):
     """
     老师获取自己所教的课的成绩
@@ -420,7 +421,7 @@ def delCourseScheduleTable(cno):
     except Exception as e:
         traceback.print_exc()
         return {"status": "failure", "data": []}
-    cursor.commit()
+    conn.commit()
     return {"status": "success", "data": []}
 
 
@@ -463,8 +464,8 @@ def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, opt
         cursor.execute(
             f"select day, index from schedule join teach on teach.cno=schedule.cno where day={day} and index={index}")
         rows = cursor.fetchall()
-        print(rows)
         if not len(rows):
+            print("case:1")
             cursor.execute(
                 f"insert into schedule(cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode) values ('{cno}', '{semester}', '{day}', '{index}', '{classroom}', '{optional}', 0, '{startweek}', '{endweek}', '{coursecode}')")
             cursor.execute(f"select tno from teacher where userid='{userid}'")
@@ -479,6 +480,7 @@ def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, opt
             conn.close()
             return {"status": "success", "data": []}
         else:
+            print("case:2")
             cursor.execute(f"select startweek, endweek from schedule where day={day} and index={index}")
             time_rows = cursor.fetchall()
             for row in time_rows:
@@ -493,6 +495,10 @@ def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, opt
                     if not len(is_exists_tno):
                         cursor.execute(f"insert into teach(tno, cno) values ('{tno[0][0]}', '{cno}')")
                         conn.commit()
+                else:
+                    cursor.close()
+                    conn.close()
+                    return {"status": "failure", "data": []}
                 conn.commit()
             cursor.close()
             conn.close()
@@ -568,7 +574,7 @@ def getTeachTable(userid):
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"select teacher.name, teach.cno, teach.num, course.name from teach join teacher on teacher.tno=teach.tno join schedule on schedule.cno=teach.cno join course on course.coursecode=schedule.coursecode where teacher.userid={userid}")
+        f"select teacher.name, teach.cno, teach.num, course.name from teach join teacher on teacher.tno=teach.tno join schedule on schedule.cno=teach.cno join course on course.coursecode=schedule.coursecode where teacher.userid='{userid}'")
     rows = cursor.fetchall()
     for row in rows:
         teachTable_info.append({"tname": row[0], "cno": row[1], "stunum": row[2], "cname": row[3]})
@@ -589,7 +595,7 @@ def getCourseScheduleTable_teacher(userid):
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"select schedule.coursecode, course.name, schedule.startweek, schedule.endweek, schedule.day, schedule.index, course.credit, schedule.classroom, schedule.optional, schedule.selected from schedule join course on schedule.coursecode = course.coursecode where schedule.cno  in (select cno from teach join teacher on teacher.tno = teacher.tno where teacher.userid = '{userid}')")
+        f"select schedule.cno, schedule.coursecode, course.name, schedule.startweek, schedule.endweek, schedule.day, schedule.index, course.credit, schedule.classroom, schedule.optional, schedule.selected from schedule join course on schedule.coursecode = course.coursecode where schedule.cno in (select cno from teach join teacher on teach.tno = teacher.tno where teacher.userid='{userid}')")
     rows = cursor.fetchall()
     if not len(rows):
         for row in rows:
