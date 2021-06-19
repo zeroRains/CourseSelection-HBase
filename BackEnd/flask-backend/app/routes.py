@@ -280,7 +280,7 @@ def selectCourse(userid, cno):
     pass
 
 
-def delStuCourse(userid, coursecode):
+def delStuCourse(userid, cno):
     pass
 
 
