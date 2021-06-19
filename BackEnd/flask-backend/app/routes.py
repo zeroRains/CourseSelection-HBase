@@ -19,6 +19,7 @@ def index():
 def error_page():
     return render_template('404.html')
 
+# ---- 学生端接口 ----
 
 @app.route('/stu/stuRegister/sno=<sno>&name=<name>&passwd=<passwd>', methods=['GET', 'POST'])
 def stuRegister(sno, name, passwd):
@@ -268,7 +269,19 @@ def addStuCourse(userid, cno):
         return {"status": "success", "data": []}
 
 
-@app.route("/stu/isChoose")
+@app.route("/stu/isChoosible/coursecode=<coursecode>")
+def isChoosible(coursecode):
+    pass
+
+@app.route("/stu/selectCourse/userid=<userid>&cno=<cno>")
+def selectCourse(userid, cno):
+    pass
+
+def delStuCourse(userid, coursecode):
+    pass
+
+# ---- 老师端接口 ----
+
 @app.route("/teacher/getTeacherInfo/userid=<userid>", methods=['POST'])
 def getTeacherInfo(userid):
     """
@@ -508,34 +521,6 @@ def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, opt
         return {"status": "failure", "data": [str(e.with_traceback(traceback.print_exc()))]}
 
 
-@app.route("/all/getCourseScheduleTable", methods=["GET"])
-def getCourseScheduleTable():
-    """
-    获得所有的课程计划
-    :return:
-    """
-    stu_course_list = []
-    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
-                            password="PommesPeter@123", host="10.0.0.3", port="15432")
-    cursor = conn.cursor()
-    cursor.execute(
-        f"select cno, semester, day, index, classroom, optional, selected, startweek, endweek, schedule.coursecode, course.name from schedule join course on course.coursecode=schedule.coursecode")
-    rows = cursor.fetchall()
-    if len(rows):
-        for row in rows:
-            stu_course_list.append(
-                {"cno": row[0], "semester": row[1], "day": row[2], "index": row[3], "classroom": row[4],
-                 "optional": row[5], "selected": row[6], "startweek": row[7], "endweek": row[8], "coursecode": row[9],
-                 "name": row[10]})
-    else:
-        cursor.close()
-        conn.close()
-        return {"status": "failure", "data": []}
-    cursor.close()
-    conn.close()
-    return {"status": "success", "data": stu_course_list}
-
-
 @app.route("/teacher/addNewCourse/coursecode=<coursecode>&name=<name>&credit=<credit>", methods=["POST"])
 def addNewCourse(coursecode, name, credit):
     """
@@ -612,32 +597,7 @@ def getCourseScheduleTable_teacher(userid):
         return {"status": "No data", "data": schedule_list}
 
 
-@app.route("/stu/getCourseTable/userid=<userid>", methods=["GET"])
-def getCourseTable_stu(userid):
-    """
-    获取学生已选课程
-    :param userid:
-    :return:
-    """
-    schedule_list = []
-    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
-                            password="PommesPeter@123", host="10.0.0.3", port="15432")
-    cursor = conn.cursor()
-    cursor.execute(
-        f"select schedule.coursecode, selection.cno, course.name, course.credit from selection join schedule on selection.cno=schedule.cno join course on course.coursecode=schedule.coursecode join student on student.sno=selection.sno where student.userid='{userid}'")
-    rows = cursor.fetchall()
-    if len(rows):
-        for row in rows:
-            schedule_list.append(
-                {"coursecode": row[0], "cno": row[1], "cname": row[2], "credit": row[3]})
-        cursor.close()
-        conn.close()
-        return {"status": "success", "data": schedule_list}
-    else:
-        cursor.close()
-        conn.close()
-        return {"status": "No data", "data": schedule_list}
-
+# ---- 通用接口 ----
 
 @app.route("/all/getCourseTable", methods=["GET"])
 def getCourseTable():
@@ -659,3 +619,31 @@ def getCourseTable():
     cursor.close()
     conn.close()
     return {"status": "success", "data": course_table}
+
+
+@app.route("/all/getCourseScheduleTable", methods=["GET"])
+def getCourseScheduleTable():
+    """
+    获得所有的课程计划
+    :return:
+    """
+    stu_course_list = []
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                            password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    cursor.execute(
+        f"select cno, semester, day, index, classroom, optional, selected, startweek, endweek, schedule.coursecode, course.name from schedule join course on course.coursecode=schedule.coursecode")
+    rows = cursor.fetchall()
+    if len(rows):
+        for row in rows:
+            stu_course_list.append(
+                {"cno": row[0], "semester": row[1], "day": row[2], "index": row[3], "classroom": row[4],
+                 "optional": row[5], "selected": row[6], "startweek": row[7], "endweek": row[8], "coursecode": row[9],
+                 "name": row[10]})
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": stu_course_list}
