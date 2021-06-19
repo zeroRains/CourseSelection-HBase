@@ -460,39 +460,43 @@ def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, opt
     endweek = time_list[3]
     cursor = conn.cursor()
     try:
-        cursor.execute(f"select cno from schedule where cno={cno}")
-        cno_rows = cursor.fetchall()
-        if not len(cno_rows):
+        cursor.execute(
+            f"select day, index from schedule join teach on teach.cno=schedule.cno where day={day} and index={index}")
+        rows = cursor.fetchall()
+        print(rows)
+        if not len(rows):
+            cursor.execute(
+                f"insert into schedule(cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode) values ('{cno}', '{semester}', '{day}', '{index}', '{classroom}', '{optional}', 0, '{startweek}', '{endweek}', '{coursecode}')")
+            cursor.execute(f"select tno from teacher where userid='{userid}'")
+            tno = cursor.fetchall()
+            cursor.execute(f"select tno from teach where tno='{tno[0][0]}' and cno='{cno}'")
+            is_exists_tno = cursor.fetchall()
+            if not len(is_exists_tno):
+                cursor.execute(f"insert into teach(tno, cno) values ('{tno[0][0]}', '{cno}')")
+                conn.commit()
+            conn.commit()
             cursor.close()
             conn.close()
-            return {"status": "failure", "data": []}
+            return {"status": "success", "data": []}
         else:
-            cursor.execute(f"select day, index from schedule where day={day} and index={index}")
-            rows = cursor.fetchall()
-            if not len(rows):
-                cursor.execute(
-                    f"insert into schedule(cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode) values ('{cno}', '{semester}', '{day}', '{index}', '{classroom}', '{optional}', 0, '{startweek}', '{endweek}', '{coursecode}')")
-                cursor.execute(f"select tno from teacher where userid={userid}")
-                tno = cursor.fetchall()
-                cursor.execute(f"insert into teach(tno, cno) values ('{tno[0][0]}', '{cno}')")
-                cursor.commit()
-                cursor.close()
-                conn.close()
-                return {"status": "success", "data": []}
-            else:
-                cursor.execute(f"select startweek, endweek from schedule where day={day} and index={index}")
-                time_rows = cursor.fetchall()
-                for row in time_rows:
-                    if startweek > row[1] and endweek < row[0]:
-                        cursor.execute(
-                            f"insert into schedule(cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode) values ('{cno}', '{semester}', '{day}', '{index}', '{classroom}', {optional}, 0, '{startweek}', '{endweek}', '{coursecode}')")
-                        cursor.execute(f"select tno from teacher where userid={userid}")
-                        tno = cursor.fetchall()
+            cursor.execute(f"select startweek, endweek from schedule where day={day} and index={index}")
+            time_rows = cursor.fetchall()
+            for row in time_rows:
+                if int(startweek) > row[1] or int(endweek) < row[0]:
+                    cursor.execute(
+                        f"insert into schedule(cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode) values ('{cno}', '{semester}', '{day}', '{index}', '{classroom}', {optional}, 0, '{startweek}', '{endweek}', '{coursecode}')")
+                    conn.commit()
+                    cursor.execute(f"select tno from teacher where userid='{userid}'")
+                    tno = cursor.fetchall()
+                    cursor.execute(f"select tno from teach where tno='{tno[0][0]}' and cno='{cno}'")
+                    is_exists_tno = cursor.fetchall()
+                    if not len(is_exists_tno):
                         cursor.execute(f"insert into teach(tno, cno) values ('{tno[0][0]}', '{cno}')")
-                        cursor.commit()
-                cursor.close()
-                conn.close()
-                return {"status": "success", "data": []}
+                        conn.commit()
+                conn.commit()
+            cursor.close()
+            conn.close()
+            return {"status": "success", "data": []}
     except Exception as e:
         traceback.print_exc()
         return {"status": "failure", "data": [str(e.with_traceback(traceback.print_exc()))]}
@@ -541,7 +545,7 @@ def addNewCourse(coursecode, name, credit):
     cursor = conn.cursor()
     try:
         cursor.execute(f"insert into course(coursecode, name, credit) values ('{coursecode}', '{name}', '{credit}')")
-        cursor.commit()
+        conn.commit()
         cursor.close()
         conn.close()
     except Exception as e:
