@@ -519,7 +519,7 @@ def getCourseScheduleTable():
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"select cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode from schedule join course on course.coursecode=schedule.coursecode")
+        f"select cno, semester, day, index, classroom, optional, selected, startweek, endweek, schedule.coursecode, course.name from schedule join course on course.coursecode=schedule.coursecode")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
@@ -531,7 +531,6 @@ def getCourseScheduleTable():
         cursor.close()
         conn.close()
         return {"status": "failure", "data": []}
-
     cursor.close()
     conn.close()
     return {"status": "success", "data": stu_course_list}
@@ -574,10 +573,11 @@ def getTeachTable(userid):
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"select teacher.name, teach.cno, teach.num, course.name from teach join teacher on teacher.tno=teach.tno join schedule on schedule.cno=teach.cno join course on course.coursecode=schedule.coursecode where teacher.userid='{userid}'")
+        f"select teacher.name, teach.cno, course.credit, course.name, schedule.selected, schedule.optional from teach join teacher on teacher.tno=teach.tno join schedule on schedule.cno=teach.cno join course on course.coursecode=schedule.coursecode where teacher.userid='{userid}'")
     rows = cursor.fetchall()
     for row in rows:
-        teachTable_info.append({"tname": row[0], "cno": row[1], "stunum": row[2], "cname": row[3]})
+        teachTable_info.append(
+            {"tname": row[0], "cno": row[1], "cname": row[2], "credit": row[3], "selected": row[4], "optional": row[5]})
     cursor.close()
     conn.close()
     return {"status": "success", "data": teachTable_info}
@@ -597,7 +597,7 @@ def getCourseScheduleTable_teacher(userid):
     cursor.execute(
         f"select schedule.cno, schedule.coursecode, course.name, schedule.startweek, schedule.endweek, schedule.day, schedule.index, course.credit, schedule.classroom, schedule.optional, schedule.selected from schedule join course on schedule.coursecode = course.coursecode where schedule.cno in (select cno from teach join teacher on teach.tno = teacher.tno where teacher.userid='{userid}')")
     rows = cursor.fetchall()
-    if not len(rows):
+    if len(rows):
         for row in rows:
             schedule_list.append(
                 {"cno": row[0], "coursecode": row[1], "cname": row[2], "startweek": row[3], "endweek": row[4],
