@@ -1,8 +1,8 @@
 <template>
-  <div class="AsideTeacher">
-    <el-col>
+  <div class="AsideTeacher" style="height: 100%">
+    <el-col style="height: 100%">
       <el-menu
-        style="font-size: 30px"
+        style="font-size: 30px; height: 100%"
         class="el-menu-vertical-demo"
         @open="handleOpen"
         @close="handleClose"
@@ -45,7 +45,7 @@
               >删除课程计划</el-menu-item
             >
             <el-menu-item index="/teacher/course">我的课程</el-menu-item>
-            <el-menu-item index="/teacher/delcourse">删除课程</el-menu-item>
+            <!-- <el-menu-item index="/teacher/delcourse">删除课程</el-menu-item> -->
           </el-menu-item-group>
         </el-submenu>
       </el-menu>

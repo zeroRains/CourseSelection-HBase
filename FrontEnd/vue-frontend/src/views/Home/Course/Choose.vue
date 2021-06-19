@@ -18,9 +18,15 @@
           <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
         </template>
         <template slot-scope="test">
-          <el-button type="primary" @click="handleEdit(test.$index, test.row)"
-            >选课</el-button
+          <div
+            style="width: 40px; height: 40px"
+            @mousedown="handleEdit(test.$index, test.row)"
           >
+            <Selected :position="position" />
+          </div>
+
+          <!-- <el-button type="primary" @click="handleEdit(test.$index, test.row)"
+            >选课</el-button -->
         </template>
       </el-table-column>
     </el-table>
@@ -28,18 +34,23 @@
 </template>
 
 <script>
+import Selected from "@/components/Selected.vue";
 export default {
   name: "Choose",
+  components: {
+    Selected,
+  },
   data() {
     var tableData = [];
     // close.log(tableData);
     this.$axios.get("all/getCourseTable").then((res) => {
       var temp = res.data.data;
+      console.log(temp);
       for (let a of temp) {
         // console.log(a.coursecode);
         this.tableData.push({
           name: a.name,
-          date: a.coursecode,
+          date: a.cno,
           credit: a.credit,
         });
       }
@@ -47,13 +58,17 @@ export default {
     return {
       tableData,
       search: "",
+      position: "123",
     };
   },
   methods: {
     handleEdit(index, row) {
       // console.log(index);
       // alert(row);
+      this.position = row.date;
       console.log(row);
+      // alert(index, row);
+      // console.log(row);
       // alert(row.credit);
       // console.log(index, row);
     },
