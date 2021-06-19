@@ -10,11 +10,13 @@
       "
       style="width: 100%"
     >
-      <el-table-column align="center" label="课程代码" prop="date">
+      <el-table-column align="center" label="课程序号" prop="cno">
       </el-table-column>
-      <el-table-column align="center" label="课程名称" prop="name">
+      <el-table-column align="center" label="课程代码" prop="coursecode">
       </el-table-column>
-      <el-table-column align="center" label="学分" prop="address">
+      <el-table-column align="center" label="课程名称" prop="course_name">
+      </el-table-column>
+      <el-table-column align="center" label="学分" prop="credit">
       </el-table-column>
     </el-table>
   </div>
@@ -24,29 +26,17 @@
 export default {
   name: "Check",
   data() {
+    var tableData;
+    this.$axios
+      .get(
+        "stu/getCoureseTable/userid=" + window.localStorage.getItem("userid")
+      )
+      .then((res) => {
+        this.tableData = res.data.data;
+        // alert(this.tableData.status);
+      });
     return {
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-      ],
+      tableData,
     };
   },
 };
