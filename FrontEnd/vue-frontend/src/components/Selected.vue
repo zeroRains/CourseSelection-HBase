@@ -87,8 +87,24 @@ export default {
   },
   methods: {
     handleEdit(index, row) {
-      // alert(this.position);
-      console.log(index, row);
+      this.$axios
+        .post(
+          "/stu/selectCourse/userid=" +
+            window.localStorage.getItem("userid") +
+            "&cno=" +
+            row.cno
+        )
+        .then((res) => {
+          if (res.data.status == "success") {
+            this.$message({
+              message: "选课成功！",
+              type: "success",
+            });
+            this.dialogTableVisible = false;
+          } else {
+            this.$message.error("课程冲突，选择失败！");
+          }
+        });
     },
     getPostion() {
       this.$axios

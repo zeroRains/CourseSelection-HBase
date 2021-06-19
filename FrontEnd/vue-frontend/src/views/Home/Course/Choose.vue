@@ -24,9 +24,6 @@
           >
             <Selected :position="position" />
           </div>
-
-          <!-- <el-button type="primary" @click="handleEdit(test.$index, test.row)"
-            >选课</el-button -->
         </template>
       </el-table-column>
     </el-table>
