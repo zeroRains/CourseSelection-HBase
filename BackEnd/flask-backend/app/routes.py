@@ -222,7 +222,7 @@ def getStuScore(userid):
 
 
 @app.route("/stu/getCoureseTable/userid=<userid>", methods=["GET"])
-def getCoureseTable(userid):
+def getCourseTable_stu(userid):
     """
     获取学生的已选课程
     :param userid:
@@ -233,7 +233,7 @@ def getCoureseTable(userid):
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"select student.sno, course.name, course.coursecode, course.credit, selection.cno from student join selection on student.sno=selection.sno join schedule on selection.cno=schedule.cno join course on course.coursecode=schedule.coursecode where userid='{userid}'")
+        f"select distinct student.sno, course.name, course.coursecode, course.credit, selection.cno, schedule.semester from student join selection on student.sno=selection.sno join schedule on selection.cno=schedule.cno join course on course.coursecode=schedule.coursecode where userid='{userid}'")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
@@ -270,7 +270,7 @@ def addStuCourse(userid, cno):
         return {"status": "success", "data": []}
 
 
-@app.route("/stu/isChoosible/coursecode=<coursecode>")
+@app.route("/stu/isChoosible/coursecode=<coursecode>", methods=["GET"])
 def is_Choosible(coursecode):
     choosible_class_list = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
@@ -278,7 +278,7 @@ def is_Choosible(coursecode):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            f"select schedule.cno, semester, day, index, classroom, optional, selected, startweek, endweek, teach.tno, teacher.name, course.name  from schedule join course on course.coursecode=schedule.coursecode join teach on teach.cno=schedule.cno join teacher on teach.tno=teacher.tno where schedule.coursecode={coursecode}")
+            f"select schedule.cno, semester, day, index, classroom, optional, selected, startweek, endweek, teach.tno, teacher.name, course.name  from schedule join course on course.coursecode=schedule.coursecode join teach on teach.cno=schedule.cno join teacher on teach.tno=teacher.tno where schedule.coursecode='{coursecode}'")
         rows = cursor.fetchall()
         for row in rows:
             cursor.execute(
@@ -308,14 +308,14 @@ def is_Choosible(coursecode):
         return {"status": "failure", "data": []}
 
 
-@app.route("/stu/selectCourse/userid=<userid>&cno=<cno>")
+@app.route("/stu/selectCourse/userid=<userid>&cno=<cno>", methods=["POST"])
 def selectCourse(userid, cno):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     try:
         cursor.execute(
-            f"insert into selection(cno, sno) values ({cno}, (select sno from student where userid={userid}))")
+            f"insert into selection(cno, sno) values ({cno}, (select sno from student where userid='{userid}'))")
         conn.commit()
         cursor.execute(f"update schedule set selected=selected+1 where cno={cno}")
         conn.commit()
@@ -325,9 +325,11 @@ def selectCourse(userid, cno):
     except Exception as e:
         cursor.close()
         conn.close()
+        traceback.print_exc()
         return {"status": "failure", "data": []}
 
 
+@app.route("/stu/selectCourse/userid=<userid>&cno=<cno>", methods=["POST"])
 def delStuCourse(userid, cno):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
@@ -345,6 +347,28 @@ def delStuCourse(userid, cno):
         cursor.close()
         conn.close()
         return {"status": "failure", "data": []}
+
+
+@app.route("/stu/getCourseTable/userid=<userid>", methods=["GET"])
+def getNotSelectedCourse_stu(userid):
+    course_table = []
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                            password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    cursor.execute(
+        f"select course.coursecode, course.name, course.credit from course where course.coursecode not in (select schedule.coursecode from selection join schedule on schedule.cno=selection.cno join student on selection.sno=selection.sno where student.userid='{userid}')")
+    rows = cursor.fetchall()
+    if len(rows):
+        for row in rows:
+            course_table.append(
+                {"cno": row[0], "name": row[1], "credit": row[2]})
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": course_table}
 
 
 # ---- 老师端接口 ----
@@ -666,7 +690,7 @@ def getCourseScheduleTable_teacher(userid):
 # ---- 通用接口 ----
 
 @app.route("/all/getCourseTable", methods=["GET"])
-def getCourseTable():
+def getCourseTable_all():
     course_table = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
