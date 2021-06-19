@@ -1,9 +1,9 @@
 <template>
-  <div class="home">
-    <el-container>
+  <div class="home" style="height: 100%">
+    <el-container style="height: 100%">
       <el-header><Nav /></el-header>
-      <el-container>
-        <el-aside width="200px"
+      <el-container style="height: 100%">
+        <el-aside width="200px" style="height: 100%"
           ><Aside v-if="is_student" />
           <AsideTeacher v-else />
         </el-aside>
