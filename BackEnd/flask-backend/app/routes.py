@@ -329,7 +329,7 @@ def selectCourse(userid, cno):
         return {"status": "failure", "data": []}
 
 
-@app.route("/stu/selectCourse/userid=<userid>&cno=<cno>", methods=["POST"])
+@app.route("/stu/delStuCourse/userid=<userid>&cno=<cno>", methods=["POST"])
 def delStuCourse(userid, cno):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
