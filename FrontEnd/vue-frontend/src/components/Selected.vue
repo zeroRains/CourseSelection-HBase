@@ -1,8 +1,6 @@
 <template>
   <div class="Selected">
-    <el-button type="primary" @click="dialogTableVisible = true"
-      >选课</el-button
-    >
+    <el-button type="primary" @click="getPostion">选课</el-button>
     <el-dialog
       :customClass="customWidth"
       title="课程选择"
@@ -11,52 +9,52 @@
       <el-table :data="tableData" style="width: 100%">
         <el-table-column label="课程序号">
           <template slot-scope="scope">
-            <span>{{ scope.row.date }}</span>
+            <span>{{ scope.row.cno }}</span>
           </template>
         </el-table-column>
         <el-table-column label="课程代号">
-          <template slot-scope="scope">
-            <span>{{ scope.row.date }}</span>
+          <template>
+            <span>{{ this.position }}</span>
           </template>
         </el-table-column>
         <el-table-column label="课程名称">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.cname }}</span>
           </template>
         </el-table-column>
         <el-table-column label="开课周">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.startweek }}</span>
           </template>
         </el-table-column>
         <el-table-column label="结束周">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.endweek }}</span>
           </template>
         </el-table-column>
         <el-table-column label="星期">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.day }}</span>
           </template>
         </el-table-column>
         <el-table-column label="节次">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.index }}</span>
           </template>
         </el-table-column>
         <el-table-column label="授课教师">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.tname }}</span>
           </template>
         </el-table-column>
         <el-table-column label="可选人数">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.optional }}</span>
           </template>
         </el-table-column>
         <el-table-column label="已选人数">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.selected }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -80,36 +78,32 @@ export default {
     position: [],
   },
   data() {
+    var tableData;
+
     return {
       dialogTableVisible: false,
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-      ],
+      tableData,
     };
   },
   methods: {
     handleEdit(index, row) {
-      alert(this.position);
+      // alert(this.position);
       console.log(index, row);
+    },
+    getPostion() {
+      this.$axios
+        .get("stu/isChoosible/coursecode=" + this.position)
+        .then((res) => {
+          var temp = res.data.data;
+
+          if (temp.length != 0) {
+            this.tableData = temp;
+            this.dialogTableVisible = true;
+          } else {
+            this.$message.error("当前课程没有可选的课号！");
+          }
+        });
+      // alert(this.position);
     },
   },
 };
