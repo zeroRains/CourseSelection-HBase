@@ -1,22 +1,74 @@
 <template>
   <div class="Selected">
-    <el-button type="text" @click="dialogTableVisible = true"
-      >打开嵌套表格的 Dialog</el-button
+    <el-button type="primary" @click="dialogTableVisible = true"
+      >选课</el-button
     >
-
-    <el-dialog title="收货地址" :visible.sync="dialogTableVisible">
-      <el-table :data="gridData">
-        <el-table-column
-          property="date"
-          label="日期"
-          width="150"
-        ></el-table-column>
-        <el-table-column
-          property="name"
-          label="姓名"
-          width="200"
-        ></el-table-column>
-        <el-table-column property="address" label="地址"></el-table-column>
+    <el-dialog
+      customClass="customWidth"
+      title="课程选择"
+      :visible.sync="dialogTableVisible"
+    >
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column label="课程序号">
+          <template slot-scope="scope">
+            <span>{{ scope.row.date }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="课程代号">
+          <template slot-scope="scope">
+            <span>{{ scope.row.date }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="课程名称">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="开课周">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="结束周">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="星期">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="节次">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="授课教师">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="可选人数">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="已选人数">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              size="mini"
+              @click="handleEdit(scope.$index, scope.row)"
+              >选课</el-button
+            >
+          </template>
+        </el-table-column>
       </el-table>
     </el-dialog>
   </div>
@@ -24,9 +76,13 @@
 <script>
 export default {
   name: "Selected",
+  props: {
+    position: [],
+  },
   data() {
     return {
-      gridData: [
+      dialogTableVisible: false,
+      tableData: [
         {
           date: "2016-05-02",
           name: "王小虎",
@@ -35,21 +91,33 @@ export default {
         {
           date: "2016-05-04",
           name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
+          address: "上海市普陀区金沙江路 1517 弄",
         },
         {
           date: "2016-05-01",
           name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
+          address: "上海市普陀区金沙江路 1519 弄",
         },
         {
           date: "2016-05-03",
           name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
+          address: "上海市普陀区金沙江路 1516 弄",
         },
       ],
-      dialogTableVisible: false,
     };
+  },
+  methods: {
+    handleEdit(index, row) {
+      alert(this.position);
+      console.log(index, row);
+    },
   },
 };
 </script>
+
+<style>
+.customWidth {
+  width: 80%;
+  height: 70%;
+}
+</style>
