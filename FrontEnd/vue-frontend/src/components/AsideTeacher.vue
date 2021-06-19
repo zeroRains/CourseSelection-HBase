@@ -45,7 +45,7 @@
               >删除课程计划</el-menu-item
             >
             <el-menu-item index="/teacher/course">我的课程</el-menu-item>
-            <el-menu-item index="/teacher/delcourse">删除课程</el-menu-item>
+            <!-- <el-menu-item index="/teacher/delcourse">删除课程</el-menu-item> -->
           </el-menu-item-group>
         </el-submenu>
       </el-menu>
