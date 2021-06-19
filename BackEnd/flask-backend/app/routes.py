@@ -219,8 +219,8 @@ def getStuScore(userid):
     return {"status": "success", "data": score_info}
 
 
-@app.route("/stu/getStuTable/userid=<userid>", methods=["GET"])
-def getStuTable(userid):
+@app.route("/stu/getCoureseTable/userid=<userid>", methods=["GET"])
+def getCoureseTable(userid):
     """
     获取学生的已选课程
     :param userid:
@@ -603,6 +603,33 @@ def getCourseScheduleTable_teacher(userid):
                 {"cno": row[0], "coursecode": row[1], "cname": row[2], "startweek": row[3], "endweek": row[4],
                  "day": row[5], "index": row[6], "credit": row[7], "classroom": row[8], "optional": row[9],
                  "selected": row[10]})
+        cursor.close()
+        conn.close()
+        return {"status": "success", "data": schedule_list}
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "No data", "data": schedule_list}
+
+
+@app.route("/stu/getCourseTable/userid=<userid>", methods=["GET"])
+def getCourseTable_stu(userid):
+    """
+    获取学生已选课程
+    :param userid:
+    :return:
+    """
+    schedule_list = []
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                            password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    cursor.execute(
+        f"select schedule.coursecode, selection.cno, course.name, course.credit from selection join schedule on selection.cno=schedule.cno join course on course.coursecode=schedule.coursecode join student on student.sno=selection.sno where student.userid='{userid}'")
+    rows = cursor.fetchall()
+    if len(rows):
+        for row in rows:
+            schedule_list.append(
+                {"coursecode": row[0], "cno": row[1], "cname": row[2], "credit": row[3]})
         cursor.close()
         conn.close()
         return {"status": "success", "data": schedule_list}
