@@ -271,17 +271,80 @@ def addStuCourse(userid, cno):
 
 
 @app.route("/stu/isChoosible/coursecode=<coursecode>")
-def isChoosible(coursecode):
-    pass
+def is_Choosible(coursecode):
+    choosible_class_list = []
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                            password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            f"select schedule.cno, semester, day, index, classroom, optional, selected, startweek, endweek, teach.tno, teacher.name, course.name  from schedule join course on course.coursecode=schedule.coursecode join teach on teach.cno=schedule.cno join teacher on teach.tno=teacher.tno where schedule.coursecode={coursecode}")
+        rows = cursor.fetchall()
+        for row in rows:
+            cursor.execute(
+                f"select day, index from schedule join selection on selection.cno=schedule.cno where day={row[2]} and index={row[3]}")
+            course_rows = cursor.fetchall()
+            if not len(course_rows):
+                choosible_class_list.append(
+                    {"cno": row[0], "semester": row[1], "day": row[2], "index": row[3], "classroom": row[4],
+                     "optional": row[5], "selected": row[6], "startweek": row[7], "endweek": row[8], "tno": row[9],
+                     "tname": row[10], "cname": row[11]})
+            else:
+                cursor.execute(
+                    f"select startweek, endweek from schedule join selection on selection.cno=schedule.cno where day={row[2]} and index={row[3]}")
+                time_rows = cursor.fetchall()
+                for item in time_rows:
+                    if int(row[7]) > item[1] or int(row[8]) < item[0]:
+                        choosible_class_list.append(
+                            {"cno": row[0], "semester": row[1], "day": row[2], "index": row[3], "classroom": row[4],
+                             "optional": row[5], "selected": row[6], "startweek": row[7], "endweek": row[8],
+                             "tno": row[9],
+                             "tname": row[10], "cname": row[11]})
+        cursor.close()
+        conn.close()
+        return {"status": "success", "data": choosible_class_list}
+    except Exception as e:
+        traceback.print_exc()
+        return {"status": "failure", "data": []}
 
 
 @app.route("/stu/selectCourse/userid=<userid>&cno=<cno>")
 def selectCourse(userid, cno):
-    pass
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                            password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            f"insert into selection(cno, sno) values ({cno}, (select sno from student where userid={userid}))")
+        conn.commit()
+        cursor.execute(f"update schedule set selected=selected+1 where cno={cno}")
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "success", "data": []}
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
 
 
 def delStuCourse(userid, cno):
-    pass
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                            password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            f"delete from selection join student on student.sno=selection.sno where userid={userid} and selection.cno={cno}")
+        conn.commit()
+        cursor.execute(f"update schedule set selected=selected-1 where cno={cno}")
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "success", "data": []}
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
 
 
 # ---- 老师端接口 ----
@@ -298,7 +361,6 @@ def getTeacherInfo(userid):
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     try:
-
         cursor.execute(
             f"select tno, teacher.name, sex, birthday, age, position, college.name from teacher join college on teacher.collegenum=college.num where userid='{userid}'")
         rows = cursor.fetchall()
