@@ -5,7 +5,7 @@
     >
     <el-dialog
       top="20px"
-      customClass="customWidth"
+      customClass="customWidth1"
       title="创建课程计划"
       :visible.sync="dialogFormVisible"
     >
@@ -112,6 +112,7 @@ export default {
     });
     return {
       courselist,
+      isReload: false,
       dialogFormVisible: false,
       form: {
         cno: "",
@@ -128,6 +129,7 @@ export default {
       formLabelWidth: "100px",
     };
   },
+
   methods: {
     handleEdit() {
       console.log("");
@@ -161,13 +163,12 @@ export default {
             this.form.option
         )
         .then((res) => {
-          console.log(res);
           if (res.data.status == "success") {
             this.$message({
               message: "添加课程计划成功",
               type: "success",
             });
-            this.dialogFormVisible = false;
+            location.reload();
           } else {
             this.$message.error("存在课程冲突，添加课程计划失败");
           }
@@ -177,7 +178,7 @@ export default {
 };
 </script>
 <style>
-.customWidth {
+.customWidth1 {
   width: 500px;
   background: #e2e4e3;
 }

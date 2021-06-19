@@ -1,8 +1,8 @@
 <template>
-  <div class="AsideTeacher">
-    <el-col>
+  <div class="AsideTeacher" style="height: 100%">
+    <el-col style="height: 100%">
       <el-menu
-        style="font-size: 30px"
+        style="font-size: 30px; height: 100%"
         class="el-menu-vertical-demo"
         @open="handleOpen"
         @close="handleClose"
