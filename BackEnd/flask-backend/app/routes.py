@@ -1,7 +1,6 @@
 # 从app模块中即从__init__.py中导入创建的app应用
 import traceback
 import uuid
-import os
 from hashlib import md5
 
 import psycopg2
@@ -349,8 +348,6 @@ def addStuScoreWithFile():
         f = request.files['file']
 
 
-
-
 @app.route("/stu/getStuScores/userid=<userid>", methods=["GET"])
 def getStuScores_stu(userid):
     """
@@ -474,7 +471,7 @@ def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, opt
             rows = cursor.fetchall()
             if not len(rows):
                 cursor.execute(
-                    f"insert into schedule(cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode) values ('{cno}', '{semester}', '{day}', '{index}', '{classroom}', 0, '{selected}', '{startweek}', '{endweek}', '{coursecode}')")
+                    f"insert into schedule(cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode) values ('{cno}', '{semester}', '{day}', '{index}', '{classroom}', '{optional}', 0, '{startweek}', '{endweek}', '{coursecode}')")
                 cursor.execute(f"select tno from teacher where userid={userid}")
                 tno = cursor.fetchall()
                 cursor.execute(f"insert into teach(tno, cno) values ('{tno[0][0]}', '{cno}')")
@@ -588,7 +585,7 @@ def getCourseScheduleTable_teacher(userid):
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"select teach.cno, schedule.coursecode, course.name, schedule.startweek, schedule.endweek, schedule.day, schedule.index, course.credit, schedule.classroom, schedule.optional, schedule.selected from schedule join course on course.coursecode=schedule.coursecode join teach on teach.cno=schedule.cno join teacher on teach.tno=teacher.tno where teacher.userid='{userid}'")
+        f"select schedule.coursecode, course.name, schedule.startweek, schedule.endweek, schedule.day, schedule.index, course.credit, schedule.classroom, schedule.optional, schedule.selected from schedule join course on schedule.coursecode = course.coursecode where schedule.cno  in (select cno from teach join teacher on teacher.tno = teacher.tno where teacher.userid = '{userid}')")
     rows = cursor.fetchall()
     if not len(rows):
         for row in rows:
@@ -612,14 +609,12 @@ def getCourseTable():
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
     cursor.execute(
-        f"select schedule.cno, schedule.semester, schedule.day, schedule.index, schedule.classroom, schedule.optional, schedule.selected, course.coursecode, course.name, course.credit, schedule.startweek, schedule.endweek from course join schedule on course.coursecode=schedule.coursecode")
+        f"select course.coursecode, course.name, course.credit from course")
     rows = cursor.fetchall()
     if len(rows):
         for row in rows:
             course_table.append(
-                {"cno": row[0], "semester": row[1], "day": row[2], "index": row[3], "classroom": row[4],
-                 "optional": row[5], "selected": row[6], "coursecode": row[7], "name": row[8], "credit": row[9],
-                 "startweek": row[10], "endweek": row[11]})
+                {"cno": row[0], "name": row[1], "credit": row[2]})
     else:
         cursor.close()
         conn.close()
