@@ -389,19 +389,23 @@ def getStuScores_teacher(userid):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select * from student where userid='{userid}'")
-    rows = cursor.fetchall()
-    if len(rows):
-        for row in rows:
-            score_info.append(
-                {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
-    else:
+    try:
+        cursor.execute(f"select * from student where userid='{userid}'")
+        rows = cursor.fetchall()
+        if len(rows):
+            for row in rows:
+                score_info.append(
+                    {"sno": row[1], "sex": row[2], "age": row[3], "birthday": row[4], "name": row[5], "userid": row[6]})
+        else:
+            cursor.close()
+            conn.close()
+            return {"status": "No data", "data": []}
         cursor.close()
         conn.close()
+        return {"status": "success", "data": score_info}
+    except Exception as e:
+        traceback.print_exc()
         return {"status": "failure", "data": []}
-    cursor.close()
-    conn.close()
-    return {"status": "success", "data": score_info}
 
 
 @app.route("/teacher/delCourseScheduleTable/cno=<cno>")
