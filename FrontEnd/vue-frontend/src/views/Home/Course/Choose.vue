@@ -40,18 +40,20 @@ export default {
   data() {
     var tableData = [];
     // close.log(tableData);
-    this.$axios.get("all/getCourseTable").then((res) => {
-      var temp = res.data.data;
-      console.log(temp);
-      for (let a of temp) {
-        // console.log(a.coursecode);
-        this.tableData.push({
-          name: a.name,
-          date: a.cno,
-          credit: a.credit,
-        });
-      }
-    });
+    this.$axios
+      .get("stu/getCourseTable/userid=" + window.localStorage.getItem("userid"))
+      .then((res) => {
+        var temp = res.data.data;
+        console.log(temp);
+        for (let a of temp) {
+          // console.log(a.coursecode);
+          this.tableData.push({
+            name: a.name,
+            date: a.cno,
+            credit: a.credit,
+          });
+        }
+      });
     return {
       tableData,
       search: "",

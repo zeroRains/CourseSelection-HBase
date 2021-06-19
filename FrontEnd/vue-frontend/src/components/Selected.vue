@@ -101,6 +101,7 @@ export default {
               type: "success",
             });
             this.dialogTableVisible = false;
+            location.reload();
           } else {
             this.$message.error("课程冲突，选择失败！");
           }
