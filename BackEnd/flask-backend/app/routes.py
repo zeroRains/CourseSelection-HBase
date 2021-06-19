@@ -1,10 +1,11 @@
 # 从app模块中即从__init__.py中导入创建的app应用
 import traceback
 import uuid
+import os
 from hashlib import md5
 
 import psycopg2
-from flask import render_template
+from flask import render_template, request
 
 from app import app
 
@@ -22,6 +23,13 @@ def error_page():
 
 @app.route('/stu/stuRegister/sno=<sno>&name=<name>&passwd=<passwd>', methods=['GET', 'POST'])
 def stuRegister(sno, name, passwd):
+    """
+    学生注册接口
+    :param sno:
+    :param name:
+    :param passwd:
+    :return:
+    """
     m = md5()
     if not isinstance(sno, str):
         sno = str(sno)
@@ -49,6 +57,12 @@ def stuRegister(sno, name, passwd):
 
 @app.route('/stu/stuLogin/sno=<sno>&passwd=<passwd>', methods=['GET', 'POST'])
 def stuLogin(sno, passwd):
+    """
+    学生登录接口
+    :param sno:
+    :param passwd:
+    :return:
+    """
     m = md5()
     userid = None
     db_passwd = None
@@ -82,6 +96,13 @@ def stuLogin(sno, passwd):
 
 @app.route('/teacher/teacherRegister/tno=<tno>&name=<name>&passwd=<passwd>', methods=['POST'])
 def teacherRegister(tno, name, passwd):
+    """
+    教师账号注册
+    :param tno:
+    :param name:
+    :param passwd:
+    :return:
+    """
     m = md5()
     if not isinstance(tno, str):
         tno = str(tno)
@@ -109,6 +130,12 @@ def teacherRegister(tno, name, passwd):
 
 @app.route("/teacher/teacherLogin/tno=<tno>&passwd=<passwd>", methods=["POST"])
 def teacherLogin(tno, passwd):
+    """
+    教师登录接口
+    :param tno:
+    :param passwd:
+    :return:
+    """
     m = md5()
     userid = None
     db_passwd = None
@@ -140,6 +167,11 @@ def teacherLogin(tno, passwd):
 
 @app.route("/stu/getStuInfo/userid=<userid>", methods=['GET'])
 def getStuInfo(userid):
+    """
+    获取学生信息
+    :param userid:
+    :return:
+    """
     stu_info_list = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
@@ -164,6 +196,11 @@ def getStuInfo(userid):
 
 @app.route("/stu/getStuScore/userid=<userid>", methods=["GET"])
 def getStuScore(userid):
+    """
+    获得学生的所有课程成绩
+    :param userid:
+    :return:
+    """
     score_info = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
@@ -185,6 +222,11 @@ def getStuScore(userid):
 
 @app.route("/stu/getStuTable/userid=<userid>", methods=["GET"])
 def getStuTable(userid):
+    """
+    获取学生的课程表
+    :param userid:
+    :return:
+    """
     table = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
@@ -229,6 +271,11 @@ def addStuTable(userid, cno):
 
 @app.route("/teacher/getTeacherInfo/userid=<userid>", methods=['POST'])
 def getTeacherInfo(userid):
+    """
+    获取老师信息
+    :param userid:
+    :return:
+    """
     teacher_info_list = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
@@ -258,6 +305,11 @@ def getTeacherInfo(userid):
 
 @app.route("/teacher/updateTeacherInfo/info=<info>")
 def updateTeacherInfo(info):
+    """
+    更新教师信息
+    :param info:
+    :return:
+    """
     # userid name sex age birthday college_name
     info_list = info.split(",")
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
@@ -271,21 +323,41 @@ def updateTeacherInfo(info):
     return {"status": "success", "data": []}
 
 
-@app.route("/teacher/addStuScore")
-def addStuScore():
+@app.route("/teacher/addStuScore/cno=<cno>&sno=<sno>&usual=<usual>&exam=<exam>&score=<score>")
+def addStuScore(cno, sno, usual, exam, score):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    try:
+        cursor.execute(f"update selection set usual={usual}, exam={exam}, score={score} where cno={cno} and sno={sno}")
+        cursor.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "success", "data": []}
+    except Exception as e:
+        traceback.print_exc()
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
 
 
 @app.route("/teacher/addStuScoreWithFile")
 def addStuScoreWithFile():
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    if request.method == 'POST':
+        f = request.files['file']
+
+
 
 
 @app.route("/stu/getStuScores/userid=<userid>", methods=["GET"])
 def getStuScores_stu(userid):
+    """
+    学生查询自己的成绩
+    :param userid:
+    :return:
+    """
     score_info = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
@@ -308,6 +380,11 @@ def getStuScores_stu(userid):
 
 @app.route("/teacher/getStuScores/userid=<userid>")
 def getStuScores_teacher(userid):
+    """
+    老师获取自己所教的课的成绩
+    :param userid:
+    :return:
+    """
     score_info = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
@@ -327,24 +404,51 @@ def getStuScores_teacher(userid):
     return {"status": "success", "data": score_info}
 
 
-@app.route("/teacher/delCourseScheduleTable")
-def delCourseScheduleTable():
+@app.route("/teacher/delCourseScheduleTable/cno=<cno>")
+def delCourseScheduleTable(cno):
+    """
+    删除课程计划
+    :return:
+    """
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
-    pass
+    cursor = conn.cursor()
+    try:
+
+        cursor.execute(f"delete from schedule where cno={cno}")
+    except Exception as e:
+        traceback.print_exc()
+        return {"status": "failure", "data": []}
+    cursor.commit()
+    return {"status": "success", "data": []}
 
 
 @app.route("/teacher/delCourse")
 def delCourse():
+    """
+    删除课程
+    :return:
+    """
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     pass
 
 
 @app.route(
-    "/teacher/addNewCourseSchedule/userid=<userid>&cno=<cno>&coursecode=<coursecode>&semester=<semester>&classroom=<classroom>&time=<time>&selected=<selected>",
+    "/teacher/addNewCourseSchedule/userid=<userid>&cno=<cno>&coursecode=<coursecode>&semester=<semester>&classroom=<classroom>&time=<time>&optional=<optional>",
     methods=["POST"])
-def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, selected):
+def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, optional):
+    """
+    添加新的课程计划
+    :param userid:
+    :param cno:
+    :param coursecode:
+    :param semester:
+    :param classroom:
+    :param time: 星期，节次，开始周，结束周
+    :param selected:
+    :return:
+    """
     # time: 星期，节次，开始周，结束周
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
@@ -380,7 +484,7 @@ def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, sel
                 for row in time_rows:
                     if startweek > row[1] and endweek < row[0]:
                         cursor.execute(
-                            f"insert into schedule(cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode) values ('{cno}', '{semester}', '{day}', '{index}', '{classroom}', 0, '{selected}', '{startweek}', '{endweek}', '{coursecode}')")
+                            f"insert into schedule(cno, semester, day, index, classroom, optional, selected, startweek, endweek, coursecode) values ('{cno}', '{semester}', '{day}', '{index}', '{classroom}', {optional}, 0, '{startweek}', '{endweek}', '{coursecode}')")
                         cursor.execute(f"select tno from teacher where userid={userid}")
                         tno = cursor.fetchall()
                         cursor.execute(f"insert into teach(tno, cno) values ('{tno[0][0]}', '{cno}')")
@@ -395,6 +499,10 @@ def addNewCourseSchedule(userid, cno, coursecode, semester, classroom, time, sel
 
 @app.route("/all/getCourseScheduleTable", methods=["GET"])
 def getCourseScheduleTable():
+    """
+    获得所有的课程计划
+    :return:
+    """
     stu_course_list = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
@@ -445,11 +553,47 @@ def addNewCourse(coursecode, name, credit):
 
 @app.route("/teacher/getTeachTable/userid=<userid>", methods=["GET"])
 def getTeachTable(userid):
+    """
+    获取特定老师所教的课
+    :param userid:
+    :return:
+    """
+    teachTable_info = []
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(f"select ")
+    cursor.execute(
+        f"select teacher.name, teach.cno, teach.num, course.name from teach join teacher on teacher.tno=teach.tno join schedule on schedule.cno=teach.cno join course on course.coursecode=schedule.coursecode where teacher.userid={userid}")
+    rows = cursor.fetchall()
+    for row in rows:
+        teachTable_info.append({"tname": row[0], "cno": row[1], "stunum": row[2], "cname": row[3]})
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": teachTable_info}
 
+
+@app.route("/teacher/getCourseScheduleTable/userid=<userid>", methods=["GET"])
+def getCourseScheduleTable_teacher(userid):
+    """
+    获取老师自己的课程计划
+    :param userid:
+    :return:
+    """
+    schedule_list = []
+    conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
+                            password="PommesPeter@123", host="10.0.0.3", port="15432")
+    cursor = conn.cursor()
+    cursor.execute(
+        f"select teach.cno, schedule.coursecode, course.name, schedule.startweek, schedule.endweek, schedule.day, schedule.index, course.credit, schedule.classroom, schedule.optional, schedule.selected from schedule join course on course.coursecode=schedule.coursecode join teach on teach.cno=schedule.cno join teacher on teach.tno=teacher.tno where teacher.userid='{userid}'")
+    rows = cursor.fetchall()
+    for row in rows:
+        schedule_list.append(
+            {"cno": row[0], "coursecode": row[1], "cname": row[2], "startweek": row[3], "endweek": row[4],
+             "day": row[5], "index": row[6], "credit": row[7], "classroom": row[8], "optional": row[9],
+             "selected": row[10]})
+    cursor.close()
+    conn.close()
+    return {"status": "success", "data": schedule_list}
 
 
 @app.route("/all/getCourseTable", methods=["GET"])
