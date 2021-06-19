@@ -336,7 +336,7 @@ def delStuCourse(userid, cno):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            f"delete from selection join student on student.sno=selection.sno where userid={userid} and selection.cno={cno}")
+            f"delete from selection where sno in (select sno from student where userid='{userid}') and selection.cno='{cno}'")
         conn.commit()
         cursor.execute(f"update schedule set selected=selected-1 where cno={cno}")
         conn.commit()
@@ -346,6 +346,7 @@ def delStuCourse(userid, cno):
     except Exception as e:
         cursor.close()
         conn.close()
+        traceback.print_exc()
         return {"status": "failure", "data": []}
 
 
