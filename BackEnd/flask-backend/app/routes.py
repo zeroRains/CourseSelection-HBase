@@ -590,14 +590,19 @@ def getCourseScheduleTable_teacher(userid):
     cursor.execute(
         f"select teach.cno, schedule.coursecode, course.name, schedule.startweek, schedule.endweek, schedule.day, schedule.index, course.credit, schedule.classroom, schedule.optional, schedule.selected from schedule join course on course.coursecode=schedule.coursecode join teach on teach.cno=schedule.cno join teacher on teach.tno=teacher.tno where teacher.userid='{userid}'")
     rows = cursor.fetchall()
-    for row in rows:
-        schedule_list.append(
-            {"cno": row[0], "coursecode": row[1], "cname": row[2], "startweek": row[3], "endweek": row[4],
-             "day": row[5], "index": row[6], "credit": row[7], "classroom": row[8], "optional": row[9],
-             "selected": row[10]})
-    cursor.close()
-    conn.close()
-    return {"status": "success", "data": schedule_list}
+    if not len(rows):
+        for row in rows:
+            schedule_list.append(
+                {"cno": row[0], "coursecode": row[1], "cname": row[2], "startweek": row[3], "endweek": row[4],
+                 "day": row[5], "index": row[6], "credit": row[7], "classroom": row[8], "optional": row[9],
+                 "selected": row[10]})
+        cursor.close()
+        conn.close()
+        return {"status": "success", "data": schedule_list}
+    else:
+        cursor.close()
+        conn.close()
+        return {"status": "No data", "data": schedule_list}
 
 
 @app.route("/all/getCourseTable", methods=["GET"])
