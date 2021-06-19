@@ -4,7 +4,7 @@
       >选课</el-button
     >
     <el-dialog
-      customClass="customWidth"
+      :customClass="customWidth"
       title="课程选择"
       :visible.sync="dialogTableVisible"
     >
@@ -117,7 +117,7 @@ export default {
 
 <style>
 .customWidth {
-  width: 80%;
+  width: 90%;
   height: 70%;
 }
 </style>

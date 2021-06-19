@@ -7,6 +7,6 @@ semester = "2020-2021下"
 classroom = "14103*"
 time = "1,1,1,8"
 option = '62'
-t = requests.get(path+f'teacher/getTeachTable/userid='+userid)
+t = requests.get(path+f'teacher/getCourseScheduleTable/userid='+userid)
 print(t.text)
 print(t)
