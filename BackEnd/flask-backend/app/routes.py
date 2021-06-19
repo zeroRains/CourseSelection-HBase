@@ -19,6 +19,7 @@ def index():
 def error_page():
     return render_template('404.html')
 
+
 # ---- 学生端接口 ----
 
 @app.route('/stu/stuRegister/sno=<sno>&name=<name>&passwd=<passwd>', methods=['GET', 'POST'])
@@ -273,12 +274,15 @@ def addStuCourse(userid, cno):
 def isChoosible(coursecode):
     pass
 
+
 @app.route("/stu/selectCourse/userid=<userid>&cno=<cno>")
 def selectCourse(userid, cno):
     pass
 
+
 def delStuCourse(userid, coursecode):
     pass
+
 
 # ---- 老师端接口 ----
 
