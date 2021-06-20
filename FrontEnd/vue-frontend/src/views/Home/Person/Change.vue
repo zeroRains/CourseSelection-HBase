@@ -46,6 +46,7 @@ export default {
     var tableData;
     this.$axios.get("/all/getCourseScheduleTable").then((res) => {
       this.tableData = res.data.data;
+      console.log(this.tableData);
     });
     return {
       search: "",
