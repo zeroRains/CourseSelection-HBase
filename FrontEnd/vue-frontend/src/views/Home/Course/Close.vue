@@ -27,7 +27,7 @@
         </template>
         <template slot-scope="test">
           <el-button type="danger" @click="handleEdit(test.$index, test.row)"
-            >删除计划</el-button
+            >退课</el-button
           >
         </template>
       </el-table-column>
