@@ -338,7 +338,7 @@ def delStuCourse(userid, cno):
         cursor.execute(
             f"delete from selection where sno in (select sno from student where userid='{userid}') and selection.cno='{cno}'")
         conn.commit()
-        cursor.execute(f"update schedule set selected=selected-1 where cno={cno}")
+        # cursor.execute(f"update schedule set selected=selected-1 where cno={cno}")
         conn.commit()
         cursor.close()
         conn.close()
@@ -422,7 +422,7 @@ def updateTeacherInfo(userid, info):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            f"update teacher set name={info_list[0]}, sex={info_list[1]}, age={info_list[2]}, birthday={info_list[3]}, postion={info_list[4]} where userid='{userid}'")
+            f"update teacher set name='{info_list[0]}', sex='{info_list[1]}', age='{info_list[2]}', birthday='{info_list[3]}', position='{info_list[4]}' where userid='{userid}'")
         conn.commit()
         cursor.close()
         conn.close()
@@ -430,6 +430,7 @@ def updateTeacherInfo(userid, info):
     except Exception as e:
         cursor.close()
         conn.close()
+        traceback.print_exc()
         return {"status": "failure", "data": []}
 
 
