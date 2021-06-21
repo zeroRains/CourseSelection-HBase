@@ -422,7 +422,7 @@ def updateTeacherInfo(userid, info):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            f"update teacher set name={info_list[0]}, sex={info_list[1]}, age={info_list[2]}, birthday={info_list[3]}, postion={info_list[4]} where userid='{userid}'")
+            f"update teacher set name='{info_list[0]}', sex='{info_list[1]}', age='{info_list[2]}', birthday='{info_list[3]}', postion='{info_list[4]}' where userid='{userid}'")
         conn.commit()
         cursor.close()
         conn.close()
