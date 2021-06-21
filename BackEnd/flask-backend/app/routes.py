@@ -407,7 +407,7 @@ def getTeacherInfo(userid):
         return {"status": "failure", "data": []}
 
 
-@app.route("/teacher/updateTeacherInfo/info=<info>")
+@app.route("/teacher/updateTeacherInfo/info=<info>", methods=["POST"])
 def updateTeacherInfo(info):
     """
     更新教师信息
