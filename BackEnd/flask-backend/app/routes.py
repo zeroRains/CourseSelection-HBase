@@ -407,10 +407,11 @@ def getTeacherInfo(userid):
         return {"status": "failure", "data": []}
 
 
-@app.route("/teacher/updateTeacherInfo/info=<info>", methods=["POST"])
-def updateTeacherInfo(info):
+@app.route("/teacher/updateTeacherInfo/userid=<userid>&info=<info>", methods=["POST"])
+def updateTeacherInfo(userid, info):
     """
     更新教师信息
+    :param userid:
     :param info:
     :return:
     """
@@ -419,12 +420,17 @@ def updateTeacherInfo(info):
     conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
                             password="PommesPeter@123", host="10.0.0.3", port="15432")
     cursor = conn.cursor()
-    cursor.execute(
-        f"update teacher set name={info_list[1]}, sex={info_list[2]}, age={info_list[3]}, birthday={info_list[4]}, postion={info_list[5]}, collegenum={info_list[6]} where userid={info_list[0]}")
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return {"status": "success", "data": []}
+    try:
+        cursor.execute(
+            f"update teacher set name={info_list[0]}, sex={info_list[1]}, age={info_list[2]}, birthday={info_list[3]}, postion={info_list[4]} where userid='{userid}'")
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "success", "data": []}
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        return {"status": "failure", "data": []}
 
 
 @app.route("/teacher/addStuScore/cno=<cno>&sno=<sno>&usual=<usual>&exam=<exam>&score=<score>")
@@ -457,7 +463,7 @@ def addStuScoreWithFile():
 def getStuScores_stu(userid):
     """
     学生查询自己的成绩
-    :param userid:
+    :param userid:upd
     :return:
     """
     score_info = []
