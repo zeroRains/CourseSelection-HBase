@@ -25,13 +25,13 @@
             <!-- <el-menu-item index="/teacher/change">修改信息</el-menu-item> -->
           </el-menu-item-group>
         </el-submenu>
-        <el-menu-item index="/teacher/score">
+        <!-- <el-menu-item index="/teacher/score">
           <i
             class="el-icon-edit-outline"
             style="font-size: 20px; color: #fff"
           ></i>
           <span slot="title" style="font-size: 20px">成绩管理</span>
-        </el-menu-item>
+        </el-menu-item> -->
         <el-submenu index="3">
           <template slot="title">
             <i class="el-icon-s-order" style="font-size: 20px; color: #fff"></i>
