@@ -430,6 +430,7 @@ def updateTeacherInfo(userid, info):
     except Exception as e:
         cursor.close()
         conn.close()
+        traceback.print_exc()
         return {"status": "failure", "data": []}
 
 
