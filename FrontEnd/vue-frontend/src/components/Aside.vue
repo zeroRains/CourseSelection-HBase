@@ -21,7 +21,7 @@
         </template>
         <el-menu-item-group>
           <el-menu-item index="/person/info">信息查看</el-menu-item>
-          <el-menu-item index="/person/score">成绩查询</el-menu-item>
+          <!-- <el-menu-item index="/person/score">成绩查询</el-menu-item> -->
         </el-menu-item-group>
       </el-submenu>
       <el-submenu index="2">
