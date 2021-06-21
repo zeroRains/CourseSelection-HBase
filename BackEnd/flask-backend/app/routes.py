@@ -338,7 +338,7 @@ def delStuCourse(userid, cno):
         cursor.execute(
             f"delete from selection where sno in (select sno from student where userid='{userid}') and selection.cno='{cno}'")
         conn.commit()
-        # cursor.execute(f"update schedule set selected=selected-1 where cno={cno}")
+        cursor.execute(f"update schedule set selected=selected-1 where cno={cno}")
         conn.commit()
         cursor.close()
         conn.close()
