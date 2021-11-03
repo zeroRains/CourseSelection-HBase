@@ -64,6 +64,8 @@ def stuLogin(sno, passwd):
     :param passwd:
     :return:
     """
+    # test：
+    # http://111.229.52.254:9779/stu/stuLogin/sno=1900300101&passwd=123456
     # m = md5()
     conn = happybase.Connection("127.0.0.1", 9090)
     table = conn.table(config["table"]["student"])
@@ -158,6 +160,8 @@ def getStuInfo(userid):
     :param userid:
     :return:
     """
+    # test
+    # http://111.229.52.254:9779/stu/getStuInfo/userid=1900300101
     conn = happybase.Connection("127.0.0.1", 9090)
     table = conn.table(config["table"]["student"])
     data = table.row(str(userid))
