@@ -212,6 +212,7 @@ def getCourseTable_stu(userid):
     :param userid:
     :return:
     """
+    # http://111.229.52.254:9779/stu/getCoureseTable/userid=1900300101
     conn = happybase.Connection("127.0.0.1", 9090)
     record = conn.table(config["table"]["record"])
     courses = conn.table(config["table"]["course"])
@@ -221,7 +222,7 @@ def getCourseTable_stu(userid):
     if iters is None:
         return {"status": "No data", "data": []}
     for key, val in iters:
-        course = courses.row(str(val[config["name"]["课程课号"]], 'utf-8'))
+        course = courses.row(str(val[bytes(config["name"]["课程课号"], "ascii")], 'utf-8'))
         res_data.append({"name": str(course[bytes(config["name"]["名称"], 'ascii')], 'utf-8'),
                          "coursecode": str(course[bytes(config["name"]["课号"], 'ascii')], 'utf-8'),
                          "credit": str(course[bytes(config["name"]["学分"], 'ascii')], 'utf-8'),
@@ -237,12 +238,13 @@ def addStuCourse(userid, cno):
     选课接口
     :return:
     """
+    # http://111.229.52.254:9779/stu/addStuCourse/userid=1900300101&cno=2020199
     conn = happybase.Connection("127.0.0.1", 9090)
     record = conn.table(config["table"]["record"])
     row = f"{cno}-{userid}"
     record.put(row,{config["name"]["课程课号"]:str(cno),
                     config["name"]["学生学号"]:str(userid),
-                    config["name"]["学生成绩"]:str(-1)})
+                    config["name"]["分数"]:str(-1)})
     conn.close()
     return {"status": "success", "data": []}
 
@@ -252,6 +254,10 @@ def is_Choosible(coursecode):
     conn = happybase.Connection("127.0.0.1", 9090)
     record = conn.table(config["table"]["record"])
     course = conn.table(config["table"]["course"])
+    subjects = []
+    fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
+    record.scan()
+
     # choosible_class_list = []
     # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
     #                         password="PommesPeter@123", host="10.0.0.3", port="15432")
