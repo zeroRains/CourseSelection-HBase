@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="hadoop@111.229.52.254:9778 password" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="ray@10.0.0.5:22 password">
+      <paths name="hadoop@111.229.52.254:9778 password">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/hadoop/zerorainswrokspace" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@111.229.52.254:9778 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/hadoop/zerorainsworkspace" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
     </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>
