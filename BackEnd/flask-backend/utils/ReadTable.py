@@ -62,6 +62,8 @@ class LoadData():
                     print(self.config["name"][cols[col]])
                     print(str(data.iloc[i, col]))
 
+    def finish(self):
+        self.conn.close()
 
 if __name__ == '__main__':
     student = pd.read_csv("../data/student.csv")

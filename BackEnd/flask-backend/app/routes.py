@@ -64,14 +64,16 @@ def stuLogin(sno, passwd):
     :param passwd:
     :return:
     """
-    m = md5()
+    # m = md5()
     conn = happybase.Connection("127.0.0.1", 9090)
     table = conn.table(config["table"]["student"])
     data = table.row(str(sno))
-    m.update(passwd.encode("utf-8"))
-    md_passwd = m.hexdigest()
-    bd_password = data[config["name"]["密码"]]
-    if md_passwd == bd_password:
+    # m.update(passwd.encode("utf-8"))
+    # md_passwd = m.hexdigest()
+    md_passwd = passwd
+    bd_password = data[bytes(config['name']['密码'], "ascii")]
+    conn.close()
+    if md_passwd == str(bd_password, 'utf-8'):
         return {"status": "success", "data": str(sno)}
     else:
         return {"status": "failure", "data": []}
@@ -159,68 +161,44 @@ def getStuInfo(userid):
     conn = happybase.Connection("127.0.0.1", 9090)
     table = conn.table(config["table"]["student"])
     data = table.row(str(userid))
-    datas= []
+    datas = []
+    conn.close()
     if data is not None:
-        data_dir = {"sno":config["name"]["学号"],
-                    "name":config["name"]["姓名"],
-                    "sex":config["name"]["性别"],
-                    "age":config["name"]["年龄"],
-                    "department":config["name"]["学院"],
-                    "major":config["name"]["专业"]
+        data_dir = {"sno": str(data[bytes(config["name"]["学号"], 'ascii')], 'utf-8'),
+                    "name": str(data[bytes(config["name"]["姓名"], 'ascii')], 'utf-8'),
+                    "sex": str(data[bytes(config["name"]["性别"], 'ascii')], 'utf-8'),
+                    "age": str(data[bytes(config["name"]["年龄"], 'ascii')], 'utf-8'),
+                    "department": str(data[bytes(config["name"]["学院"], 'ascii')], 'utf-8'),
+                    "major": str(data[bytes(config["name"]["专业"], 'ascii')], 'utf-8')
                     }
         datas.append(data_dir)
-        return  {"status": "success", "data": datas}
+        return {"status": "success", "data": datas}
     else:
         return {"status": "failure", "data": datas}
-
-    # stu_info_list = []
-    # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
-    #                         password="PommesPeter@123", host="10.0.0.3", port="15432")
-    # cursor = conn.cursor()
-    # cursor.execute(
-    #     f"select sno, sex, age, birthday, student.name, userid, classnum, college.name from student join class on class.num=student.classnum join college on class.collegenum=college.num where userid='{userid}'")
-    # rows = cursor.fetchall()
-    # if len(rows):
-    #     print(rows)
-    #     for row in rows:
-    #         stu_info_list.append(
-    #             {"sno": row[0], "sex": row[1], "age": row[2], "birthday": row[3], "name": row[4], "userid": row[5],
-    #              "classnum": row[6], "department": row[7]})
-    # else:
-    #     cursor.close()
-    #     conn.close()
-    #     return {"status": "failure", "data": []}
-    # cursor.close()
-    # conn.close()
-    # return {"status": "success", "data": stu_info_list}
-    pass
 
 
 @app.route("/stu/getStuScore/userid=<userid>", methods=["GET"])
 def getStuScore(userid):
     """
-    获得学生的所有课程成绩
+    获得某个学生的所有课程成绩
     :param userid:
     :return:
     """
-    # score_info = []
-    # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
-    #                         password="PommesPeter@123", host="10.0.0.3", port="15432")
-    # cursor = conn.cursor()
-    # cursor.execute(
-    #     f"select course.name, usual, exam, score, selection.sno from student join selection on student.sno=selection.sno join schedule on schedule.cno=selection.cno join course on course.coursecode=schedule.coursecode where userid='{userid}'")
-    # rows = cursor.fetchall()
-    # if len(rows):
-    #     for row in rows:
-    #         score_info.append({"name": row[0], "usual": row[1], "exam": row[2], "score": row[3], "sno": row[4]})
-    # else:
-    #     cursor.close()
-    #     conn.close()
-    #     return {"status": "No data", "data": []}
-    # cursor.close()
-    # conn.close()
-    # return {"status": "success", "data": score_info}
-    pass
+    conn = happybase.Connection("127.0.0.1", 9090)
+    table = conn.table(config["table"]["record"])
+    courses = conn.table(config["table"]["course"])
+    score_info = []
+    fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
+    iters = table.scan(filter=fill)
+    if iters is None:
+        return {"status": "failure", "data": score_info}
+    for row, val in iters:
+        course = courses.row(str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
+        score_info.append({"name": str(course[bytes(config["name"]["名称"], 'ascii')], 'utf-8'),
+                           "score": str(val[bytes(config["name"]["分数"], 'ascii')], 'utf-8'),
+                           })
+    conn.close()
+    return {"status": "success", "data": score_info}
 
 
 @app.route("/stu/getCoureseTable/userid=<userid>", methods=["GET"])
@@ -230,26 +208,23 @@ def getCourseTable_stu(userid):
     :param userid:
     :return:
     """
-    # table = []
-    # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
-    #                         password="PommesPeter@123", host="10.0.0.3", port="15432")
-    # cursor = conn.cursor()
-    # cursor.execute(
-    #     f"select distinct student.sno, course.name, course.coursecode, course.credit, selection.cno, schedule.semester from student join selection on student.sno=selection.sno join schedule on selection.cno=schedule.cno join course on course.coursecode=schedule.coursecode where userid='{userid}'")
-    # rows = cursor.fetchall()
-    # if len(rows):
-    #     for row in rows:
-    #         table.append(
-    #             {"sno": row[0], "course_name": row[1], "coursecode": row[2], "credit": row[3], "cno": row[4],
-    #              "semester": row[5]})
-    # else:
-    #     cursor.close()
-    #     conn.close()
-    #     return {"status": "No data", "data": []}
-    # cursor.close()
-    # conn.close()
-    # return {"status": "success", "data": table}
-    pass
+    conn = happybase.Connection("127.0.0.1", 9090)
+    record = conn.table(config["table"]["record"])
+    courses = conn.table(config["table"]["course"])
+    res_data = []
+    fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
+    iters = record.scan(filter=fill)
+    if iters is None:
+        return {"status": "No data", "data": []}
+    for key, val in iters:
+        course = courses.row(str(val[config["name"]["课程课号"]], 'utf-8'))
+        res_data.append({"name": str(course[bytes(config["name"]["名称"], 'ascii')], 'utf-8'),
+                         "coursecode": str(course[bytes(config["name"]["课号"], 'ascii')], 'utf-8'),
+                         "credit": str(course[bytes(config["name"]["学分"], 'ascii')], 'utf-8'),
+                         })
+    conn.close()
+    return {"status": "success", "data": res_data}
+
 
 
 @app.route("/stu/addStuCourse/userid=<userid>&cno=<cno>")
@@ -258,24 +233,21 @@ def addStuCourse(userid, cno):
     选课接口
     :return:
     """
-    # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
-    #                         password="PommesPeter@123", host="10.0.0.3", port="15432")
-    # cursor = conn.cursor()
-    # if userid == "" or userid is None or cno is None or cno == "":
-    #     cursor.close()
-    #     conn.close()
-    #     return {"status": "failure", "data": []}
-    # else:
-    #     cursor.execute(f"")
-    #     conn.commit()
-    #     cursor.close()
-    #     conn.close()
-    #     return {"status": "success", "data": []}
-    pass
+    conn = happybase.Connection("127.0.0.1", 9090)
+    record = conn.table(config["table"]["record"])
+    row = f"{cno}-{userid}"
+    record.put(row,{config["name"]["课程课号"]:str(cno),
+                    config["name"]["学生学号"]:str(userid),
+                    config["name"]["学生成绩"]:str(-1)})
+    conn.close()
+    return {"status": "success", "data": []}
 
 
 @app.route("/stu/isChoosible/coursecode=<coursecode>", methods=["GET"])
 def is_Choosible(coursecode):
+    conn = happybase.Connection("127.0.0.1", 9090)
+    record = conn.table(config["table"]["record"])
+    course = conn.table(config["table"]["course"])
     # choosible_class_list = []
     # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
     #                         password="PommesPeter@123", host="10.0.0.3", port="15432")
