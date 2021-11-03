@@ -66,7 +66,7 @@ def stuLogin(sno, passwd):
     """
     m = md5()
     conn = happybase.Connection("127.0.0.1", 9090)
-    table = conn.table("student")
+    table = conn.table(config["table"]["student"])
     data = table.row(str(sno))
     m.update(passwd.encode("utf-8"))
     md_passwd = m.hexdigest()
@@ -156,6 +156,23 @@ def getStuInfo(userid):
     :param userid:
     :return:
     """
+    conn = happybase.Connection("127.0.0.1", 9090)
+    table = conn.table(config["table"]["student"])
+    data = table.row(str(userid))
+    datas= []
+    if data is not None:
+        data_dir = {"sno":config["name"]["学号"],
+                    "name":config["name"]["姓名"],
+                    "sex":config["name"]["性别"],
+                    "age":config["name"]["年龄"],
+                    "department":config["name"]["学院"],
+                    "major":config["name"]["专业"]
+                    }
+        datas.append(data_dir)
+        return  {"status": "success", "data": datas}
+    else:
+        return {"status": "failure", "data": datas}
+
     # stu_info_list = []
     # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
     #                         password="PommesPeter@123", host="10.0.0.3", port="15432")
