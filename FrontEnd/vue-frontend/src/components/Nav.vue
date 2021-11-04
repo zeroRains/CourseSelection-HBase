@@ -24,15 +24,7 @@ export default {
           // alert(this.username);
         });
     } else {
-      this.$axios
-        .post(
-          "teacher/getTeacherInfo/userid=" +
-            window.localStorage.getItem("userid")
-        )
-        .then((res) => {
-          this.username = res.data.data[0].tname + "老师";
-          // alert(this.username);
-        });
+      username = "管理员老师";
     }
     return {
       username,

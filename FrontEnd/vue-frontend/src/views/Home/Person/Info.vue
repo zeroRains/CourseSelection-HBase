@@ -45,13 +45,12 @@ export default {
             name: temp.age,
           },
           {
-            date: "出生日期",
-            name: String(temp.birthday.split(" ")[0]),
+            date: "学院",
+            name: temp.department,
           },
-
           {
-            date: "班级",
-            name: temp.classnum,
+            date: "专业",
+            name: temp.major,
           },
         ];
       });

@@ -64,7 +64,7 @@ export default {
   data() {
     return {
       ruleForm: {
-        user: "1900100110",
+        user: "1900300101",
         password: "123456",
         resource: "学生端",
       },
