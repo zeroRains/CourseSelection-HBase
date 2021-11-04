@@ -10,21 +10,25 @@
       "
       style="width: 100%"
     >
-      <el-table-column label="课程序号" prop="cno"> </el-table-column>
-      <el-table-column label="课程代码" prop="coursecode"> </el-table-column>
-      <el-table-column label="课程名称" prop="cname"> </el-table-column>
-      <el-table-column label="开始周" prop="startweek"> </el-table-column>
-      <el-table-column label="结束周" prop="endweek"> </el-table-column>
-      <el-table-column label="星期" prop="day"> </el-table-column>
-      <el-table-column label="节次" prop="index"> </el-table-column>
-      <el-table-column label="学分" prop="credit"> </el-table-column>
-      <el-table-column label="教室" prop="classroom"> </el-table-column>
-      <el-table-column label="可选人数" prop="optional"> </el-table-column>
-      <el-table-column label="已选人数" prop="selected"> </el-table-column>
+      <el-table-column label="姓名" prop="name"> </el-table-column>
+      <el-table-column label="学号" prop="sno"> </el-table-column>
+      <el-table-column label="性别" prop="sex"> </el-table-column>
+      <el-table-column label="年龄" prop="age"> </el-table-column>
+      <el-table-column label="学院" prop="department"> </el-table-column>
+      <el-table-column label="专业" prop="major"> </el-table-column>
       <el-table-column align="right">
         <template slot="header">
-          <!-- <el-button type="primary" @click="handleEdit">添加计划</el-button> -->
-          <AddSchedule />
+          <el-button @click="importFile" style="font-size: 20px" type="primary"
+            >导入学生成绩</el-button
+          >
+        </template>
+        <template slot-scope="test">
+          <div
+            style="width: 40px; height: 40px"
+            @mousedown="handleEdit(test.$index, test.row)"
+          >
+            <AddSchedule :position="position" />
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -39,23 +43,41 @@ export default {
     AddSchedule,
   },
   data() {
-    var tableData;
+    var tableData = [];
+    // close.log(tableData);
     this.$axios
-      .get(
-        "teacher/getCourseScheduleTable/userid=" +
-          window.localStorage.getItem("userid")
-      )
+      .get("stu/getCourseTable/userid=" + window.localStorage.getItem("userid"))
       .then((res) => {
-        this.tableData = res.data.data;
-        // console.log(this.tableData);
+        var temp = res.data.data;
+        console.log(temp);
+        for (let a of temp) {
+          // console.log(a.coursecode);
+          this.tableData.push({
+            name: a.name,
+            date: a.cno,
+            credit: a.credit,
+          });
+        }
       });
     return {
       tableData,
+      search: "",
+      position: "123",
     };
   },
   methods: {
-    handleEdit() {
-      console.log("");
+    handleEdit(index, row) {
+      // console.log(index);
+      // alert(row);
+      this.position = row.date;
+      console.log(row);
+      // alert(index, row);
+      // console.log(row);
+      // alert(row.credit);
+      // console.log(index, row);
+    },
+    importFile() {
+      alert("这里导入文件");
     },
   },
 };

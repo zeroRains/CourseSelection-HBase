@@ -33,7 +33,7 @@ export default {
             name: temp.name,
           },
           {
-            date: "工号",
+            date: "学号",
             name: temp.sno,
           },
           {
