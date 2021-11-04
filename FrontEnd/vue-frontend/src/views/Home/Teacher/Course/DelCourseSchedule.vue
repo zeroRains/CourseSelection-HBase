@@ -10,25 +10,25 @@
       "
       style="width: 100%"
     >
-      <el-table-column label="课程序号" prop="cno"> </el-table-column>
-      <el-table-column label="课程代码" prop="coursecode"> </el-table-column>
-      <el-table-column label="课程名称" prop="cname"> </el-table-column>
-      <el-table-column label="开始周" prop="startweek"> </el-table-column>
-      <el-table-column label="结束周" prop="endweek"> </el-table-column>
-      <el-table-column label="星期" prop="day"> </el-table-column>
-      <el-table-column label="节次" prop="index"> </el-table-column>
+      <el-table-column label="课号" prop="cno"> </el-table-column>
+      <el-table-column label="名称" prop="name"> </el-table-column>
       <el-table-column label="学分" prop="credit"> </el-table-column>
-      <el-table-column label="教室" prop="classroom"> </el-table-column>
-      <el-table-column label="可选人数" prop="optional"> </el-table-column>
-      <el-table-column label="已选人数" prop="selected"> </el-table-column>
+      <el-table-column label="学年" prop="semter"> </el-table-column>
+      <el-table-column label="老师" prop="teacher"> </el-table-column>
+      <el-table-column label="职称" prop="grade"> </el-table-column>
       <el-table-column align="right">
         <template slot="header">
-          <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
+          <el-button @click="importFile" style="font-size: 20px" type="primary"
+            >导入课程信息</el-button
+          >
         </template>
         <template slot-scope="test">
-          <el-button type="danger" @click="handleEdit(test.$index, test.row)"
-            >删除计划</el-button
+          <div
+            style="width: 40px; height: 40px"
+            @mousedown="handleEdit(test.$index, test.row)"
           >
+            <AddSchedule :position="position" />
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -39,37 +39,41 @@
 export default {
   name: "DelCourseSchedule",
   data() {
-    var tableData;
+    var tableData = [];
+    // close.log(tableData);
     this.$axios
-      .get(
-        "teacher/getCourseScheduleTable/userid=" +
-          window.localStorage.getItem("userid")
-      )
+      .get("stu/getCourseTable/userid=" + window.localStorage.getItem("userid"))
       .then((res) => {
-        this.tableData = res.data.data;
+        var temp = res.data.data;
+        console.log(temp);
+        for (let a of temp) {
+          // console.log(a.coursecode);
+          this.tableData.push({
+            name: a.name,
+            date: a.cno,
+            credit: a.credit,
+          });
+        }
       });
     return {
       tableData,
+      search: "",
+      position: "123",
     };
   },
   methods: {
     handleEdit(index, row) {
-      this.$axios
-        .get("teacher/delCourseScheduleTable/cno=" + row.cno)
-        .then((res) => {
-          console.log(res);
-          if (res.data.status == "success") {
-            this.$message({
-              message: "删除成功!",
-              type: "success",
-            });
-            location.reload();
-          } else {
-            this.$message.error("删除失败！");
-          }
-        });
-      // alert(row.cno);
-      console.log(index, row);
+      // console.log(index);
+      // alert(row);
+      this.position = row.date;
+      console.log(row);
+      // alert(index, row);
+      // console.log(row);
+      // alert(row.credit);
+      // console.log(index, row);
+    },
+    importFile() {
+      alert("这里导入课程文件");
     },
   },
 };
