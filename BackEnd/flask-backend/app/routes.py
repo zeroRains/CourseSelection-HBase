@@ -198,8 +198,11 @@ def getStuScore(userid):
         return {"status": "failure", "data": score_info}
     for row, val in iters:
         course = courses.row(str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
+        score = str(val[bytes(config["name"]["分数"], 'ascii')], 'utf-8')
         score_info.append({"name": str(course[bytes(config["name"]["名称"], 'ascii')], 'utf-8'),
-                           "score": str(val[bytes(config["name"]["分数"], 'ascii')], 'utf-8'),
+                           "credit":str(course[bytes(config["name"]["学分"],'ascii')],'utf-8'),
+                           "score": score if score != '-1' else "未考试",
+                           "coursecode": str(course[bytes(config["name"]["课号"], 'ascii')], 'utf-8'),
                            })
     conn.close()
     return {"status": "success", "data": score_info}
@@ -315,6 +318,12 @@ def selectCourse(userid, cno):
 
 @app.route("/stu/delStuCourse/userid=<userid>&cno=<cno>", methods=["POST"])
 def delStuCourse(userid, cno):
+    """
+    这个是用于点击退课按钮的接口
+    :param userid:
+    :param cno:
+    :return:
+    """
     conn = happybase.connection("127.0.0.1", 9090)
     record = conn.table(config["table"]["record"])
     try:
