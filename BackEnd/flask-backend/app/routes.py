@@ -231,7 +231,6 @@ def getCourseTable_stu(userid):
     return {"status": "success", "data": res_data}
 
 
-
 @app.route("/stu/addStuCourse/userid=<userid>&cno=<cno>")
 def addStuCourse(userid, cno):
     """
@@ -242,9 +241,9 @@ def addStuCourse(userid, cno):
     conn = happybase.Connection("127.0.0.1", 9090)
     record = conn.table(config["table"]["record"])
     row = f"{cno}-{userid}"
-    record.put(row,{config["name"]["课程课号"]:str(cno),
-                    config["name"]["学生学号"]:str(userid),
-                    config["name"]["分数"]:str(-1)})
+    record.put(row, {config["name"]["课程课号"]: str(cno),
+                     config["name"]["学生学号"]: str(userid),
+                     config["name"]["分数"]: str(-1)})
     conn.close()
     return {"status": "success", "data": []}
 
@@ -254,9 +253,6 @@ def is_Choosible(coursecode):
     conn = happybase.Connection("127.0.0.1", 9090)
     record = conn.table(config["table"]["record"])
     course = conn.table(config["table"]["course"])
-    subjects = []
-    fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
-    record.scan()
 
     # choosible_class_list = []
     # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
@@ -319,6 +315,14 @@ def selectCourse(userid, cno):
 
 @app.route("/stu/delStuCourse/userid=<userid>&cno=<cno>", methods=["POST"])
 def delStuCourse(userid, cno):
+    conn = happybase.connection("127.0.0.1", 9090)
+    record = conn.table(config["table"]["record"])
+    try:
+        record.delete(f"{cno}-{userid}")
+        return {"status": "success", "data": []}
+    except Exception as e:
+        print(e)
+        return {"status": "failure", "data": []}
     # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
     #                         password="PommesPeter@123", host="10.0.0.3", port="15432")
     # cursor = conn.cursor()
