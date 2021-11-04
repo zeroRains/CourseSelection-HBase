@@ -4,7 +4,6 @@ import os
 import happybase
 from utils.config import config
 
-
 # m = md5()
 userid = sno = 1900300101
 cno = 2020199
@@ -12,13 +11,37 @@ passwd = 123456
 
 conn = happybase.Connection("127.0.0.1", 9090)
 record = conn.table(config["table"]["record"])
+course = conn.table(config["table"]["course"])
+selected_course = []
+res_data = []
+fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:111')"
+iters = record.scan(filter=fill)
+print(iters is None)
+if iters is not None:
+    for key, val in iters:
+        selected_course.append(val[bytes(config["name"]["课程课号"], 'ascii')])
+    selected_course = set(selected_course)
+iters = course.scan()
+# conn.close()
+for key, val in iters:
+    if str(key, "utf-8") not in selected_course:
+        res_data.append({"coursecode": str(key, 'utf-8'),
+                         "name": str(val[bytes(config["name"]["名称"], 'ascii')], "utf-8"),
+                         "credit": str(val[bytes(config["name"]["学分"], 'ascii')], "utf-8"),
+                         "time": str(val[bytes(config["name"]["学年"], 'ascii')], "utf-8"),
+                         "teacher": str(val[bytes(config["name"]["老师"], 'ascii')], "utf-8"), })
+print()
+
+conn = happybase.Connection("127.0.0.1", 9090)
+record = conn.table(config["table"]["record"])
 courses = conn.table(config["table"]["course"])
 res_data = []
+tempdata = record.scan()
 fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
 iters = record.scan(filter=fill)
 
 for key, val in iters:
-    course = courses.row(str(val[bytes(config["name"]["课程课号"],"ascii")], 'utf-8'))
+    course = courses.row(str(val[bytes(config["name"]["课程课号"], "ascii")], 'utf-8'))
     res_data.append({"name": str(course[bytes(config["name"]["名称"], 'ascii')], 'utf-8'),
                      "coursecode": str(course[bytes(config["name"]["课号"], 'ascii')], 'utf-8'),
                      "credit": str(course[bytes(config["name"]["学分"], 'ascii')], 'utf-8'),
@@ -26,11 +49,10 @@ for key, val in iters:
 conn.close()
 print(userid)
 
-
 conn = happybase.Connection("127.0.0.1", 9090)
 
 table = conn.table("record")
-for k,v in table.scan(filter="SingleColumnValueFilter ('score', 'score', !=, 'binary:77') "):
+for k, v in table.scan(filter="SingleColumnValueFilter ('score', 'score', !=, 'binary:77') "):
     print()
 # tmp = table.scan()
 # for data in tmp:

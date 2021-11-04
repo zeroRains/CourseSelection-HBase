@@ -13,7 +13,7 @@
       <el-table-column label="课号" prop="cno"> </el-table-column>
       <el-table-column label="名称" prop="name"> </el-table-column>
       <el-table-column label="学分" prop="credit"> </el-table-column>
-      <el-table-column label="学年" prop="semter"> </el-table-column>
+      <el-table-column label="学年" prop="semester"> </el-table-column>
       <el-table-column label="老师" prop="teacher"> </el-table-column>
       <el-table-column label="职称" prop="grade"> </el-table-column>
       <el-table-column align="right">

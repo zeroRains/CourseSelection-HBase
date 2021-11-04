@@ -38,7 +38,7 @@ export default {
     var tableData;
     this.$axios
       .get(
-        "stu/getCoureseTable/userid=" + window.localStorage.getItem("userid")
+        "/stu/deleteCourseList/userid=" + window.localStorage.getItem("userid")
       )
       .then((res) => {
         this.tableData = res.data.data;
