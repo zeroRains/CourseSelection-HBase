@@ -10,9 +10,11 @@
       "
       style="width: 100%"
     >
+      <el-table-column label="课号" prop="coursecode"> </el-table-column>
       <el-table-column label="课程名称" prop="name"> </el-table-column>
-      <el-table-column label="课程代号" prop="date"> </el-table-column>
       <el-table-column label="学分" prop="credit"> </el-table-column>
+      <el-table-column label="学年" prop="time"> </el-table-column>
+      <el-table-column label="老师" prop="teacher"> </el-table-column>
       <el-table-column align="right">
         <template slot="header">
           <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
