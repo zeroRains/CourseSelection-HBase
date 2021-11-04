@@ -64,7 +64,7 @@ export default {
   data() {
     return {
       ruleForm: {
-        user: "1900100110",
+        user: "1900300101",
         password: "123456",
         resource: "学生端",
       },
@@ -114,26 +114,23 @@ export default {
             }
           });
       } else {
-        this.$axios
-          .post(
-            "/teacher/teacherLogin/tno=" +
-              this.ruleForm.user +
-              "&passwd=" +
-              this.ruleForm.password
-          )
-          .then((res) => {
-            if (res.data.status == "success") {
-              window.localStorage.setItem("userid", res.data.data);
-              window.localStorage.setItem("is_student", "false");
-              this.$message({
-                message: "登录成功！欢迎使用课程选择系统！",
-                type: "success",
-              });
-              this.$router.push("/");
-            } else {
-              this.$message.error("帐号或者密码或者身份错误!");
-            }
+        if (
+          this.ruleForm.user == "admin" &&
+          this.ruleForm.password == "123456"
+        ) {
+          window.localStorage.setItem(
+            "userid",
+            "1d892a74-d740-3198-9c1f-db4f132ff577"
+          );
+          window.localStorage.setItem("is_student", "false");
+          this.$message({
+            message: "登录成功！欢迎使用课程选择系统！",
+            type: "success",
           });
+          this.$router.push("/");
+        } else {
+          this.$message.error("帐号或者密码或者身份错误!");
+        }
       }
     },
   },

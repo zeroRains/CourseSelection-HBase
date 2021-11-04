@@ -10,13 +10,9 @@
       "
       style="width: 100%"
     >
-      <el-table-column align="center" label="授课学期" prop="semester">
+      <el-table-column align="center" label="课号" prop="coursecode">
       </el-table-column>
-      <el-table-column align="center" label="课程序号" prop="cno">
-      </el-table-column>
-      <el-table-column align="center" label="课程代码" prop="coursecode">
-      </el-table-column>
-      <el-table-column align="center" label="课程名称" prop="course_name">
+      <el-table-column align="center" label="课程名称" prop="name">
       </el-table-column>
       <el-table-column align="center" label="学分" prop="credit">
       </el-table-column>

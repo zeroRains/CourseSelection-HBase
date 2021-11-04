@@ -30,10 +30,9 @@
           <span>课程选择</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="/person/change">课程计划</el-menu-item>
           <el-menu-item index="/course/choose">选课</el-menu-item>
           <el-menu-item index="/course/close">退课</el-menu-item>
-          <el-menu-item index="/course/check">已选课程</el-menu-item>
+          <el-menu-item index="/course/check">已选课程及成绩信息</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
