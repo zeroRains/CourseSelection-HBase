@@ -26,14 +26,12 @@
         <template slot="header">
           <el-upload
               class="upload-demo"
-              action="http://111.229.52.254:9779/all/upload_file/info_type=course"
+              action="https://jsonplaceholder.typicode.com/posts/"
               :on-preview="handlePreview"
               :on-remove="handleRemove"
               :before-remove="beforeRemove"
-              multiple
-              :limit="3"
+              :limit="1"
               :on-exceed="handleExceed"
-              :file-list="fileList"
               :http-request="uploadFile"
           >
             <el-button style="font-size: 20px" type="primary"
@@ -89,11 +87,24 @@ export default {
       let fileObj = param.files
       let form = new FormData()
       form.append("file", fileObj)
-      console.log(form.get("file"))
+      console.log("==="*20 + form.get("file"))
       this.$axios.post("all/upload_file/info_type=course", form, {
-        headers: {'content-type': 'multipart/form-data'}
+        headers: {'Content-Type': 'multipart/form-data'}
       })
-    }
+    },
+    handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      handleExceed(files, fileList) {
+        // this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+        console.log(files)
+      },
+      beforeRemove(file, fileList) {
+        return "1111"
+      }
   },
 };
 </script>

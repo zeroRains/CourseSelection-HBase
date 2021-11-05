@@ -774,6 +774,7 @@ def upload_file(_type):
     os.makedirs(file_save_path, exist_ok=True)
     try:
         file = request.files.get('file')
+        print(file)
         file_path = os.path.join(file_save_path, file.filename)
         file.save(file_path)
         ld = None
