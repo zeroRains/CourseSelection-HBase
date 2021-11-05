@@ -26,7 +26,7 @@
         <template slot="header">
           <el-upload
             class="upload-demo"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="http://111.229.52.254:9779/all/upload_file/info_type=course"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"

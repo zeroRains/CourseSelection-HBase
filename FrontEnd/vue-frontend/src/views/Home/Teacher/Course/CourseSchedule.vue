@@ -26,7 +26,7 @@
         <template slot="header">
           <el-upload
             class="upload-demo"
-            action="http://111.229.52.254:9779/all/upload_file/info_type=course"
+            action="http://111.229.52.254:9779/all/upload_file/info_type=student"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
