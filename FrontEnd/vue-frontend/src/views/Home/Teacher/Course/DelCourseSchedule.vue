@@ -10,25 +10,35 @@
       "
       style="width: 100%"
     >
-      <el-table-column label="课号" prop="cno"> </el-table-column>
-      <el-table-column label="名称" prop="name"> </el-table-column>
-      <el-table-column label="学分" prop="credit"> </el-table-column>
-      <el-table-column label="学年" prop="semester"> </el-table-column>
-      <el-table-column label="老师" prop="teacher"> </el-table-column>
-      <el-table-column label="职称" prop="grade"> </el-table-column>
-      <el-table-column align="right">
+      <el-table-column align="center" label="课号" prop="cno">
+      </el-table-column>
+      <el-table-column align="center" label="名称" prop="name">
+      </el-table-column>
+      <el-table-column align="center" label="学分" prop="credit">
+      </el-table-column>
+      <el-table-column align="center" label="学年" prop="semester">
+      </el-table-column>
+      <el-table-column align="center" label="老师" prop="teacher">
+      </el-table-column>
+      <el-table-column align="center" label="职称" prop="grade">
+      </el-table-column>
+      <el-table-column align="center">
         <template slot="header">
-          <el-button @click="importFile" style="font-size: 20px" type="primary"
-            >导入课程信息</el-button
+          <el-upload
+            class="upload-demo"
+            action="https://jsonplaceholder.typicode.com/posts/"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            multiple
+            :limit="3"
+            :on-exceed="handleExceed"
+            :file-list="fileList"
           >
-        </template>
-        <template slot-scope="test">
-          <div
-            style="width: 40px; height: 40px"
-            @mousedown="handleEdit(test.$index, test.row)"
-          >
-            <AddSchedule :position="position" />
-          </div>
+            <el-button style="font-size: 20px" type="primary"
+              >点击上传</el-button
+            >
+          </el-upload>
         </template>
       </el-table-column>
     </el-table>
@@ -41,20 +51,21 @@ export default {
   data() {
     var tableData = [];
     // close.log(tableData);
-    this.$axios
-      .get("stu/getCourseTable/userid=" + window.localStorage.getItem("userid"))
-      .then((res) => {
-        var temp = res.data.data;
-        console.log(temp);
-        for (let a of temp) {
-          // console.log(a.coursecode);
-          this.tableData.push({
-            name: a.name,
-            date: a.cno,
-            credit: a.credit,
-          });
-        }
-      });
+    this.$axios.get("all/getAllCourse").then((res) => {
+      var temp = res.data.data;
+      console.log(temp);
+      for (let a of temp) {
+        // console.log(a.coursecode);
+        this.tableData.push({
+          cno: a.cno,
+          name: a.cname,
+          credit: a.credit,
+          grade: a.grade,
+          semester: a.semester,
+          teacher: a.teacher,
+        });
+      }
+    });
     return {
       tableData,
       search: "",
@@ -71,9 +82,6 @@ export default {
       // console.log(row);
       // alert(row.credit);
       // console.log(index, row);
-    },
-    importFile() {
-      alert("这里导入课程文件");
     },
   },
 };

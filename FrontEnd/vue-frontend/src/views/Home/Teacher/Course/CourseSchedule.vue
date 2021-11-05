@@ -10,25 +10,35 @@
       "
       style="width: 100%"
     >
-      <el-table-column label="学号" prop="sno"> </el-table-column>
-      <el-table-column label="姓名" prop="name"> </el-table-column>
-      <el-table-column label="性别" prop="sex"> </el-table-column>
-      <el-table-column label="年龄" prop="age"> </el-table-column>
-      <el-table-column label="学院" prop="department"> </el-table-column>
-      <el-table-column label="专业" prop="major"> </el-table-column>
-      <el-table-column align="right">
+      <el-table-column align="center" label="学号" prop="sno">
+      </el-table-column>
+      <el-table-column align="center" label="姓名" prop="name">
+      </el-table-column>
+      <el-table-column align="center" label="性别" prop="sex">
+      </el-table-column>
+      <el-table-column align="center" label="年龄" prop="age">
+      </el-table-column>
+      <el-table-column align="center" label="学院" prop="department">
+      </el-table-column>
+      <el-table-column align="center" label="专业" prop="major">
+      </el-table-column>
+      <el-table-column align="center">
         <template slot="header">
-          <el-button @click="importFile" style="font-size: 20px" type="primary"
-            >导入学生信息</el-button
+          <el-upload
+            class="upload-demo"
+            action="https://jsonplaceholder.typicode.com/posts/"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            multiple
+            :limit="3"
+            :on-exceed="handleExceed"
+            :file-list="fileList"
           >
-        </template>
-        <template slot-scope="test">
-          <div
-            style="width: 40px; height: 40px"
-            @mousedown="handleEdit(test.$index, test.row)"
-          >
-            <AddSchedule :position="position" />
-          </div>
+            <el-button @click="refresh" style="font-size: 20px" type="primary"
+              >点击上传</el-button
+            >
+          </el-upload>
         </template>
       </el-table-column>
     </el-table>
@@ -45,20 +55,21 @@ export default {
   data() {
     var tableData = [];
     // close.log(tableData);
-    this.$axios
-      .get("stu/getCourseTable/userid=" + window.localStorage.getItem("userid"))
-      .then((res) => {
-        var temp = res.data.data;
-        console.log(temp);
-        for (let a of temp) {
-          // console.log(a.coursecode);
-          this.tableData.push({
-            name: a.name,
-            date: a.cno,
-            credit: a.credit,
-          });
-        }
-      });
+    this.$axios.get("all/getAllStudent").then((res) => {
+      var temp = res.data.data;
+      console.log(temp);
+      for (let a of temp) {
+        // console.log(a.coursecode);
+        this.tableData.push({
+          sno: a.sno,
+          name: a.sname,
+          sex: a.sex,
+          age: a.age,
+          department: a.department,
+          major: a.major,
+        });
+      }
+    });
     return {
       tableData,
       search: "",
@@ -66,18 +77,8 @@ export default {
     };
   },
   methods: {
-    handleEdit(index, row) {
-      // console.log(index);
-      // alert(row);
-      this.position = row.date;
-      console.log(row);
-      // alert(index, row);
-      // console.log(row);
-      // alert(row.credit);
-      // console.log(index, row);
-    },
-    importFile() {
-      alert("这里导入文件");
+    refresh() {
+      // alert("test");
     },
   },
 };
