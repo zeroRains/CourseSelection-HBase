@@ -52,23 +52,23 @@ export default {
     handleEdit(index, row) {
       this.$axios
         .post(
-          "/stu/delStuCourse/userid=" +
+          "stu/delStuCourse/userid=" +
             window.localStorage.getItem("userid") +
             "&cno=" +
-            row.cno
+            row.coursecode
         )
         .then((res) => {
           if (res.data.status == "success") {
+            location.reload();
+
             this.$message({
               message: "退课成功！",
               type: "success",
             });
-            location.reload();
           } else {
             this.$message.error("退课失败！");
           }
         });
-      console.log(row);
     },
   },
 };

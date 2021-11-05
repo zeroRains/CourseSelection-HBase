@@ -4,10 +4,44 @@ import os
 import happybase
 from utils.config import config
 
+
+def getNotSelectedCourse_stu(userid):
+    """
+    学生可以退课的接口
+    :param userid:
+    :return:
+    """
+    conn = happybase.Connection("127.0.0.1", 9090)
+    record = conn.table(config["table"]["record"])
+    course = conn.table(config["table"]["course"])
+    fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
+    fill1 = f"SingleColumnValueFilter ('score', 'score', =, 'binary:{str(-1)}')"
+    iters = record.scan(filter=f"{fill} AND {fill1}")
+    res = []
+    courses = []
+    if iters is None:
+        return {"status": "success", "data": []}
+    else:
+        for key, val in iters:
+            courses.append(
+                str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
+        iters = course.scan()
+        for key, val in iters:
+            if str(key, 'utf-8') in courses:
+                res.append({
+                    "coursecode": str(val[bytes(config["name"]["课号"], "ascii")], "utf-8"),
+                    "name": str(val[bytes(config["name"]["名称"], "ascii")], "utf-8"),
+                    "credit": str(val[bytes(config["name"]["学分"], "ascii")], "utf-8"),
+                })
+        return {"status": "success", "data": res}
+
+
 # m = md5()
 userid = sno = 1900300101
 cno = 2020199
 passwd = 123456
+print("?????")
+getNotSelectedCourse_stu(userid)
 
 conn = happybase.Connection("127.0.0.1", 9090)
 record = conn.table(config["table"]["record"])

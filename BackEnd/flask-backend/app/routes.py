@@ -200,7 +200,8 @@ def getStuScore(userid):
     if iters is None:
         return {"status": "failure", "data": score_info}
     for row, val in iters:
-        course = courses.row(str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
+        course = courses.row(
+            str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
         score = str(val[bytes(config["name"]["分数"], 'ascii')], 'utf-8')
         score_info.append({"name": str(course[bytes(config["name"]["名称"], 'ascii')], 'utf-8'),
                            "credit": str(course[bytes(config["name"]["学分"], 'ascii')], 'utf-8'),
@@ -228,7 +229,8 @@ def getCourseTable_stu(userid):
     if iters is None:
         return {"status": "No data", "data": []}
     for key, val in iters:
-        course = courses.row(str(val[bytes(config["name"]["课程课号"], "ascii")], 'utf-8'))
+        course = courses.row(
+            str(val[bytes(config["name"]["课程课号"], "ascii")], 'utf-8'))
         res_data.append({"name": str(course[bytes(config["name"]["名称"], 'ascii')], 'utf-8'),
                          "coursecode": str(course[bytes(config["name"]["课号"], 'ascii')], 'utf-8'),
                          "credit": str(course[bytes(config["name"]["学分"], 'ascii')], 'utf-8'),
@@ -318,7 +320,8 @@ def selectCourse(userid):
     iters = record.scan(filter=fill)
     if iters is not None:
         for key, val in iters:
-            selected_course.append(val[bytes(config["name"]["课程课号"], 'ascii')])
+            selected_course.append(
+                str(val[bytes(config["name"]["课程课号"], 'ascii')], 'utf-8'))
         selected_course = set(selected_course)
     iters = course.scan()
     # conn.close()
@@ -375,7 +378,8 @@ def getNotSelectedCourse_stu(userid):
         return {"status": "success", "data": []}
     else:
         for key, val in iters:
-            courses.append(str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
+            courses.append(
+                str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
         iters = course.scan()
         for key, val in iters:
             if str(key, 'utf-8') in courses:
