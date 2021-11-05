@@ -1,14 +1,14 @@
 <template>
   <div class="DelCourseSchedule">
     <el-table
-      :header-row-style="{ lineHeight: '30px' }"
-      :data="
+        :header-row-style="{ lineHeight: '30px' }"
+        :data="
         tableData.filter(
           (data) =>
             !search || data.name.toLowerCase().includes(search.toLowerCase())
         )
       "
-      style="width: 100%"
+        style="width: 100%"
     >
       <el-table-column align="center" label="课号" prop="cno">
       </el-table-column>
@@ -25,18 +25,20 @@
       <el-table-column align="center">
         <template slot="header">
           <el-upload
-            class="upload-demo"
-            action="http://111.229.52.254:9779/all/upload_file/info_type=course"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-remove="beforeRemove"
-            multiple
-            :limit="3"
-            :on-exceed="handleExceed"
-            :file-list="fileList"
+              class="upload-demo"
+              action="http://111.229.52.254:9779/all/upload_file/info_type=course"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              multiple
+              :limit="3"
+              :on-exceed="handleExceed"
+              :file-list="fileList"
+              :http-request="uploadFile"
           >
             <el-button style="font-size: 20px" type="primary"
-              >点击上传</el-button
+            >点击上传
+            </el-button
             >
           </el-upload>
         </template>
@@ -83,6 +85,15 @@ export default {
       // alert(row.credit);
       // console.log(index, row);
     },
+    uploadFile(param) {
+      let fileObj = param.files
+      let form = new FormData()
+      form.append("file", fileObj)
+      console.log(form.get("file"))
+      this.$axios.post("all/upload_file/info_type=course", form, {
+        headers: {'content-type': 'multipart/form-data'}
+      })
+    }
   },
 };
 </script>

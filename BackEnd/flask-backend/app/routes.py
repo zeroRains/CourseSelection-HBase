@@ -768,7 +768,7 @@ def getCourseScheduleTable():
 file_save_path = "/home/hadoop/CourseSelection-HBase/BackEnd/flask-backend/static/"
 
 
-@app.route("/all/upload_file/info_type=<_type>", methods=["GET"])
+@app.route("/all/upload_file/info_type=<_type>", methods=["POST"])
 def upload_file(_type):
     conn = happybase.Connection("127.0.0.1", 9090)
     os.makedirs(file_save_path, exist_ok=True)
@@ -782,7 +782,8 @@ def upload_file(_type):
         elif _type == "student":
             ld = LoadData(conn, student=file_path)
         if ld is not None:
-            ld.load()
+            # ld.load()
+            pass
         else:
             raise Exception("None Object")
         conn.close()
