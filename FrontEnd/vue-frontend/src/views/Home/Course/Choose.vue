@@ -78,8 +78,8 @@ export default {
         )
         .then((res) => {
           if (res.data.status == "success") {
-            // location.reload();
-            row.visible = false;
+            location.reload();
+            // row.visible = false;
             this.$message({
               message: "选课成功！",
               type: "success",

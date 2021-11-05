@@ -9,13 +9,6 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="root@111.229.52.254:9778 password">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/home/hadoop/zerorainsworkspace" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
     </serverData>
     <option name="myAutoUpload" value="ALWAYS" />
   </component>
