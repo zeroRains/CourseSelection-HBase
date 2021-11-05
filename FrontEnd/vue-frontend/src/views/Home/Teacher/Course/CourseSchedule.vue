@@ -10,8 +10,8 @@
       "
       style="width: 100%"
     >
-      <el-table-column label="姓名" prop="name"> </el-table-column>
       <el-table-column label="学号" prop="sno"> </el-table-column>
+      <el-table-column label="姓名" prop="name"> </el-table-column>
       <el-table-column label="性别" prop="sex"> </el-table-column>
       <el-table-column label="年龄" prop="age"> </el-table-column>
       <el-table-column label="学院" prop="department"> </el-table-column>
@@ -19,7 +19,7 @@
       <el-table-column align="right">
         <template slot="header">
           <el-button @click="importFile" style="font-size: 20px" type="primary"
-            >导入学生成绩</el-button
+            >导入学生信息</el-button
           >
         </template>
         <template slot-scope="test">

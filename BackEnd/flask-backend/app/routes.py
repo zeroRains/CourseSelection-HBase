@@ -339,7 +339,7 @@ def delStuCourse(userid, cno):
     :param cno:
     :return:
     """
-    conn = happybase.Connection("127.0.0.1",9090)
+    conn = happybase.Connection("127.0.0.1", 9090)
     record = conn.table(config["table"]["record"])
     try:
         record.delete(f"{cno}-{userid}")
@@ -367,18 +367,17 @@ def getNotSelectedCourse_stu(userid):
     if iters is None:
         return {"status": "success", "data": []}
     else:
-        for key,val in iters:
-            courses.append(str(val[bytes(config["name"]["课程课号"],"ascii")],"utf-8"))
+        for key, val in iters:
+            courses.append(str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
         iters = course.scan()
-        for key,val in iters:
-            if str(key,'utf-8') in courses:
+        for key, val in iters:
+            if str(key, 'utf-8') in courses:
                 res.append({
                     "coursecode": str(val[bytes(config["name"]["课号"], "ascii")], "utf-8"),
                     "name": str(val[bytes(config["name"]["名称"], "ascii")], "utf-8"),
                     "credit": str(val[bytes(config["name"]["学分"], "ascii")], "utf-8"),
                 })
         return {"status": "success", "data": res}
-
 
 
 #
@@ -715,13 +714,13 @@ def getCourseTable_all():
     获取全部的课程信息
     :return:
     """
-    conn = happybase.Connection("127.0.0.1",9090)
+    conn = happybase.Connection("127.0.0.1", 9090)
     course = conn.table(config["table"]["course"])
     iters = course.scan()
     res = []
-    for key,val in iters:
+    for key, val in iters:
         res.append({
-            "cno":str(val[bytes(config["name"]["课号"],"ascii")],'utf-8'),
+            "cno": str(val[bytes(config["name"]["课号"], "ascii")], 'utf-8'),
             "cname": str(val[bytes(config["name"]["名称"], "ascii")], 'utf-8'),
             "credit": str(val[bytes(config["name"]["学分"], "ascii")], 'utf-8'),
             "semester": str(val[bytes(config["name"]["学年"], "ascii")], 'utf-8'),
@@ -737,4 +736,16 @@ def getCourseScheduleTable():
     获得所有的学生信息
     :return:
     """
-    pass
+    conn = happybase.Connection("127.0.0.1", 9090)
+    student = conn.table(config["table"]["student"])
+    res = []
+    for key, val in student.scan():
+        res.append({
+            "sno": str(val[bytes(config["name"]["学号"], 'ascii')], 'utf-8'),
+            "sname": str(val[bytes(config["name"]["姓名"], 'ascii')], 'utf-8'),
+            "sex": str(val[bytes(config["name"]["性别"], 'ascii')], 'utf-8'),
+            "age": str(val[bytes(config["name"]["年龄"], 'ascii')], 'utf-8'),
+            "department": str(val[bytes(config["name"]["学院"], 'ascii')], 'utf-8'),
+            "major": str(val[bytes(config["name"]["专业"], 'ascii')], 'utf-8'),
+        })
+    return  {"status": "success", "data": res}
