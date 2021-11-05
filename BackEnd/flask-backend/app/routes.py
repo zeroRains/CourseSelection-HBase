@@ -314,7 +314,7 @@ def selectCourse(userid):
     iters = record.scan(filter=fill)
     if iters is not None:
         for key, val in iters:
-            selected_course.append(val[bytes(config["name"]["课程课号"], 'ascii')])
+            selected_course.append(str(val[bytes(config["name"]["课程课号"], 'ascii')],'utf-8'))
         selected_course = set(selected_course)
     iters = course.scan()
     # conn.close()

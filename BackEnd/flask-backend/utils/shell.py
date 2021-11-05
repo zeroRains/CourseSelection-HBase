@@ -4,10 +4,15 @@ import os
 import happybase
 from utils.config import config
 
+
+
 # m = md5()
 userid = sno = 1900300101
 cno = 2020199
 passwd = 123456
+
+selectCourse(userid)
+
 
 conn = happybase.Connection("127.0.0.1", 9090)
 record = conn.table(config["table"]["record"])
