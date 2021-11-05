@@ -1,4 +1,4 @@
-config = {
+config_dict = {
     "name": {
         "学号": "sinfo:studentid",
         "姓名": "sinfo:sname",

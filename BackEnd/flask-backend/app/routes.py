@@ -6,7 +6,7 @@ import happybase
 from flask import render_template, request
 
 from app import app
-from utils.config import config
+from utils.config import config_dict
 from utils.ReadTable import LoadData
 
 
@@ -69,12 +69,12 @@ def stuLogin(sno, passwd):
     # http://111.229.52.254:9779/stu/stuLogin/sno=1900300101&passwd=123456
     # m = md5()
     conn = happybase.Connection("127.0.0.1", 9090)
-    table = conn.table(config["table"]["student"])
+    table = conn.table(config_dict["table"]["student"])
     data = table.row(str(sno))
     # m.update(passwd.encode("utf-8"))
     # md_passwd = m.hexdigest()
     md_passwd = passwd
-    bd_password = data[bytes(config['name']['密码'], "ascii")]
+    bd_password = data[bytes(config_dict['name']['密码'], "ascii")]
     conn.close()
     if md_passwd == str(bd_password, 'utf-8'):
         return {"status": "success", "data": str(sno)}
@@ -164,17 +164,17 @@ def getStuInfo(userid):
     # test
     # http://111.229.52.254:9779/stu/getStuInfo/userid=1900300101
     conn = happybase.Connection("127.0.0.1", 9090)
-    table = conn.table(config["table"]["student"])
+    table = conn.table(config_dict["table"]["student"])
     data = table.row(str(userid))
     datas = []
     conn.close()
     if data is not None:
-        data_dir = {"sno": str(data[bytes(config["name"]["学号"], 'ascii')], 'utf-8'),
-                    "name": str(data[bytes(config["name"]["姓名"], 'ascii')], 'utf-8'),
-                    "sex": str(data[bytes(config["name"]["性别"], 'ascii')], 'utf-8'),
-                    "age": str(data[bytes(config["name"]["年龄"], 'ascii')], 'utf-8'),
-                    "department": str(data[bytes(config["name"]["学院"], 'ascii')], 'utf-8'),
-                    "major": str(data[bytes(config["name"]["专业"], 'ascii')], 'utf-8')
+        data_dir = {"sno": str(data[bytes(config_dict["name"]["学号"], 'ascii')], 'utf-8'),
+                    "name": str(data[bytes(config_dict["name"]["姓名"], 'ascii')], 'utf-8'),
+                    "sex": str(data[bytes(config_dict["name"]["性别"], 'ascii')], 'utf-8'),
+                    "age": str(data[bytes(config_dict["name"]["年龄"], 'ascii')], 'utf-8'),
+                    "department": str(data[bytes(config_dict["name"]["学院"], 'ascii')], 'utf-8'),
+                    "major": str(data[bytes(config_dict["name"]["专业"], 'ascii')], 'utf-8')
                     }
         datas.append(data_dir)
         conn.close()
@@ -192,8 +192,8 @@ def getStuScore(userid):
     :return:
     """
     conn = happybase.Connection("127.0.0.1", 9090)
-    table = conn.table(config["table"]["record"])
-    courses = conn.table(config["table"]["course"])
+    table = conn.table(config_dict["table"]["record"])
+    courses = conn.table(config_dict["table"]["course"])
     score_info = []
     fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
     iters = table.scan(filter=fill)
@@ -201,12 +201,12 @@ def getStuScore(userid):
         return {"status": "failure", "data": score_info}
     for row, val in iters:
         course = courses.row(
-            str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
-        score = str(val[bytes(config["name"]["分数"], 'ascii')], 'utf-8')
-        score_info.append({"name": str(course[bytes(config["name"]["名称"], 'ascii')], 'utf-8'),
-                           "credit": str(course[bytes(config["name"]["学分"], 'ascii')], 'utf-8'),
+            str(val[bytes(config_dict["name"]["课程课号"], "ascii")], "utf-8"))
+        score = str(val[bytes(config_dict["name"]["分数"], 'ascii')], 'utf-8')
+        score_info.append({"name": str(course[bytes(config_dict["name"]["名称"], 'ascii')], 'utf-8'),
+                           "credit": str(course[bytes(config_dict["name"]["学分"], 'ascii')], 'utf-8'),
                            "score": score if score != '-1' else "未考试",
-                           "coursecode": str(course[bytes(config["name"]["课号"], 'ascii')], 'utf-8'),
+                           "coursecode": str(course[bytes(config_dict["name"]["课号"], 'ascii')], 'utf-8'),
                            })
     conn.close()
     return {"status": "success", "data": score_info}
@@ -221,8 +221,8 @@ def getCourseTable_stu(userid):
     """
     # http://111.229.52.254:9779/stu/getCoureseTable/userid=1900300101
     conn = happybase.Connection("127.0.0.1", 9090)
-    record = conn.table(config["table"]["record"])
-    courses = conn.table(config["table"]["course"])
+    record = conn.table(config_dict["table"]["record"])
+    courses = conn.table(config_dict["table"]["course"])
     res_data = []
     fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
     iters = record.scan(filter=fill)
@@ -230,10 +230,10 @@ def getCourseTable_stu(userid):
         return {"status": "No data", "data": []}
     for key, val in iters:
         course = courses.row(
-            str(val[bytes(config["name"]["课程课号"], "ascii")], 'utf-8'))
-        res_data.append({"name": str(course[bytes(config["name"]["名称"], 'ascii')], 'utf-8'),
-                         "coursecode": str(course[bytes(config["name"]["课号"], 'ascii')], 'utf-8'),
-                         "credit": str(course[bytes(config["name"]["学分"], 'ascii')], 'utf-8'),
+            str(val[bytes(config_dict["name"]["课程课号"], "ascii")], 'utf-8'))
+        res_data.append({"name": str(course[bytes(config_dict["name"]["名称"], 'ascii')], 'utf-8'),
+                         "coursecode": str(course[bytes(config_dict["name"]["课号"], 'ascii')], 'utf-8'),
+                         "credit": str(course[bytes(config_dict["name"]["学分"], 'ascii')], 'utf-8'),
                          })
     conn.close()
     return {"status": "success", "data": res_data}
@@ -247,12 +247,12 @@ def addStuCourse(userid, cno):
     """
     # http://111.229.52.254:9779/stu/addStuCourse/userid=1900300101&cno=2020199
     conn = happybase.Connection("127.0.0.1", 9090)
-    record = conn.table(config["table"]["record"])
+    record = conn.table(config_dict["table"]["record"])
     row = f"{cno}-{userid}"
     try:
-        record.put(row, {config["name"]["课程课号"]: str(cno),
-                         config["name"]["学生学号"]: str(userid),
-                         config["name"]["分数"]: str(-1)})
+        record.put(row, {config_dict["name"]["课程课号"]: str(cno),
+                         config_dict["name"]["学生学号"]: str(userid),
+                         config_dict["name"]["分数"]: str(-1)})
         conn.close()
         return {"status": "success", "data": []}
     except Exception as e:
@@ -264,8 +264,8 @@ def addStuCourse(userid, cno):
 @app.route("/stu/isChoosible/coursecode=<coursecode>", methods=["GET"])
 def is_Choosible(coursecode):
     conn = happybase.Connection("127.0.0.1", 9090)
-    record = conn.table(config["table"]["record"])
-    course = conn.table(config["table"]["course"])
+    record = conn.table(config_dict["table"]["record"])
+    course = conn.table(config_dict["table"]["course"])
 
     # choosible_class_list = []
     # conn = psycopg2.connect(database="CourseSelectionSystem", user="gaussdb",
@@ -312,8 +312,8 @@ def selectCourse(userid):
     :return:
     """
     conn = happybase.Connection("127.0.0.1", 9090)
-    record = conn.table(config["table"]["record"])
-    course = conn.table(config["table"]["course"])
+    record = conn.table(config_dict["table"]["record"])
+    course = conn.table(config_dict["table"]["course"])
     selected_course = []
     res_data = []
     fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
@@ -321,7 +321,7 @@ def selectCourse(userid):
     if iters is not None:
         for key, val in iters:
             selected_course.append(
-                str(val[bytes(config["name"]["课程课号"], 'ascii')], 'utf-8'))
+                str(val[bytes(config_dict["name"]["课程课号"], 'ascii')], 'utf-8'))
         selected_course = set(selected_course)
     iters = course.scan()
     # conn.close()
@@ -331,10 +331,10 @@ def selectCourse(userid):
         for key, val in iters:
             if str(key, "utf-8") not in selected_course:
                 res_data.append({"coursecode": str(key, 'utf-8'),
-                                 "name": str(val[bytes(config["name"]["名称"], 'ascii')], "utf-8"),
-                                 "credit": str(val[bytes(config["name"]["学分"], 'ascii')], "utf-8"),
-                                 "time": str(val[bytes(config["name"]["学年"], 'ascii')], "utf-8"),
-                                 "teacher": str(val[bytes(config["name"]["老师"], 'ascii')], "utf-8"), })
+                                 "name": str(val[bytes(config_dict["name"]["名称"], 'ascii')], "utf-8"),
+                                 "credit": str(val[bytes(config_dict["name"]["学分"], 'ascii')], "utf-8"),
+                                 "time": str(val[bytes(config_dict["name"]["学年"], 'ascii')], "utf-8"),
+                                 "teacher": str(val[bytes(config_dict["name"]["老师"], 'ascii')], "utf-8"), })
         conn.close()
         return {"status": "success", "data": res_data}
 
@@ -348,7 +348,7 @@ def delStuCourse(userid, cno):
     :return:
     """
     conn = happybase.Connection("127.0.0.1", 9090)
-    record = conn.table(config["table"]["record"])
+    record = conn.table(config_dict["table"]["record"])
     try:
         record.delete(f"{cno}-{userid}")
         conn.close()
@@ -367,8 +367,8 @@ def getNotSelectedCourse_stu(userid):
     :return:
     """
     conn = happybase.Connection("127.0.0.1", 9090)
-    record = conn.table(config["table"]["record"])
-    course = conn.table(config["table"]["course"])
+    record = conn.table(config_dict["table"]["record"])
+    course = conn.table(config_dict["table"]["course"])
     fill = f"SingleColumnValueFilter ('studentid', 'studentid', =, 'binary:{userid}')"
     fill1 = f"SingleColumnValueFilter ('score', 'score', =, 'binary:{str(-1)}')"
     iters = record.scan(filter=f"{fill} AND {fill1}")
@@ -379,14 +379,14 @@ def getNotSelectedCourse_stu(userid):
     else:
         for key, val in iters:
             courses.append(
-                str(val[bytes(config["name"]["课程课号"], "ascii")], "utf-8"))
+                str(val[bytes(config_dict["name"]["课程课号"], "ascii")], "utf-8"))
         iters = course.scan()
         for key, val in iters:
             if str(key, 'utf-8') in courses:
                 res.append({
-                    "coursecode": str(val[bytes(config["name"]["课号"], "ascii")], "utf-8"),
-                    "name": str(val[bytes(config["name"]["名称"], "ascii")], "utf-8"),
-                    "credit": str(val[bytes(config["name"]["学分"], "ascii")], "utf-8"),
+                    "coursecode": str(val[bytes(config_dict["name"]["课号"], "ascii")], "utf-8"),
+                    "name": str(val[bytes(config_dict["name"]["名称"], "ascii")], "utf-8"),
+                    "credit": str(val[bytes(config_dict["name"]["学分"], "ascii")], "utf-8"),
                 })
         conn.close()
         return {"status": "success", "data": res}
@@ -727,17 +727,17 @@ def getCourseTable_all():
     :return:
     """
     conn = happybase.Connection("127.0.0.1", 9090)
-    course = conn.table(config["table"]["course"])
+    course = conn.table(config_dict["table"]["course"])
     iters = course.scan()
     res = []
     for key, val in iters:
         res.append({
-            "cno": str(val[bytes(config["name"]["课号"], "ascii")], 'utf-8'),
-            "cname": str(val[bytes(config["name"]["名称"], "ascii")], 'utf-8'),
-            "credit": str(val[bytes(config["name"]["学分"], "ascii")], 'utf-8'),
-            "semester": str(val[bytes(config["name"]["学年"], "ascii")], 'utf-8'),
-            "teacher": str(val[bytes(config["name"]["老师"], "ascii")], 'utf-8'),
-            "grade": str(val[bytes(config["name"]["职称"], "ascii")], 'utf-8'),
+            "cno": str(val[bytes(config_dict["name"]["课号"], "ascii")], 'utf-8'),
+            "cname": str(val[bytes(config_dict["name"]["名称"], "ascii")], 'utf-8'),
+            "credit": str(val[bytes(config_dict["name"]["学分"], "ascii")], 'utf-8'),
+            "semester": str(val[bytes(config_dict["name"]["学年"], "ascii")], 'utf-8'),
+            "teacher": str(val[bytes(config_dict["name"]["老师"], "ascii")], 'utf-8'),
+            "grade": str(val[bytes(config_dict["name"]["职称"], "ascii")], 'utf-8'),
         })
     conn.close()
     return {"status": "success", "data": res}
@@ -750,16 +750,16 @@ def getCourseScheduleTable():
     :return:
     """
     conn = happybase.Connection("127.0.0.1", 9090)
-    student = conn.table(config["table"]["student"])
+    student = conn.table(config_dict["table"]["student"])
     res = []
     for key, val in student.scan():
         res.append({
-            "sno": str(val[bytes(config["name"]["学号"], 'ascii')], 'utf-8'),
-            "sname": str(val[bytes(config["name"]["姓名"], 'ascii')], 'utf-8'),
-            "sex": str(val[bytes(config["name"]["性别"], 'ascii')], 'utf-8'),
-            "age": str(val[bytes(config["name"]["年龄"], 'ascii')], 'utf-8'),
-            "department": str(val[bytes(config["name"]["学院"], 'ascii')], 'utf-8'),
-            "major": str(val[bytes(config["name"]["专业"], 'ascii')], 'utf-8'),
+            "sno": str(val[bytes(config_dict["name"]["学号"], 'ascii')], 'utf-8'),
+            "sname": str(val[bytes(config_dict["name"]["姓名"], 'ascii')], 'utf-8'),
+            "sex": str(val[bytes(config_dict["name"]["性别"], 'ascii')], 'utf-8'),
+            "age": str(val[bytes(config_dict["name"]["年龄"], 'ascii')], 'utf-8'),
+            "department": str(val[bytes(config_dict["name"]["学院"], 'ascii')], 'utf-8'),
+            "major": str(val[bytes(config_dict["name"]["专业"], 'ascii')], 'utf-8'),
         })
     conn.close()
     return {"status": "success", "data": res}
