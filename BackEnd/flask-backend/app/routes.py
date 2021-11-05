@@ -1,12 +1,13 @@
 # 从app模块中即从__init__.py中导入创建的app应用
+import os
 import traceback
-import uuid
-from hashlib import md5
 
 import happybase
 from flask import render_template, request
-from utils.config import config
+
 from app import app
+from utils.config import config
+from utils.ReadTable import LoadData
 
 
 # 建立路由，通过路由可以执行其覆盖的方法，可以多个路由指向同一个方法。
@@ -176,8 +177,10 @@ def getStuInfo(userid):
                     "major": str(data[bytes(config["name"]["专业"], 'ascii')], 'utf-8')
                     }
         datas.append(data_dir)
+        conn.close()
         return {"status": "success", "data": datas}
     else:
+        conn.close()
         return {"status": "failure", "data": datas}
 
 
@@ -254,6 +257,7 @@ def addStuCourse(userid, cno):
         return {"status": "success", "data": []}
     except Exception as e:
         print(e)
+        conn.close()
         return {"status": "failure", "data": []}
 
 
@@ -331,6 +335,7 @@ def selectCourse(userid):
                                  "credit": str(val[bytes(config["name"]["学分"], 'ascii')], "utf-8"),
                                  "time": str(val[bytes(config["name"]["学年"], 'ascii')], "utf-8"),
                                  "teacher": str(val[bytes(config["name"]["老师"], 'ascii')], "utf-8"), })
+        conn.close()
         return {"status": "success", "data": res_data}
 
 
@@ -346,9 +351,11 @@ def delStuCourse(userid, cno):
     record = conn.table(config["table"]["record"])
     try:
         record.delete(f"{cno}-{userid}")
+        conn.close()
         return {"status": "success", "data": []}
     except Exception as e:
         print(e)
+        conn.close()
         return {"status": "failure", "data": []}
 
 
@@ -381,6 +388,7 @@ def getNotSelectedCourse_stu(userid):
                     "name": str(val[bytes(config["name"]["名称"], "ascii")], "utf-8"),
                     "credit": str(val[bytes(config["name"]["学分"], "ascii")], "utf-8"),
                 })
+        conn.close()
         return {"status": "success", "data": res}
 
 
@@ -731,6 +739,7 @@ def getCourseTable_all():
             "teacher": str(val[bytes(config["name"]["老师"], "ascii")], 'utf-8'),
             "grade": str(val[bytes(config["name"]["职称"], "ascii")], 'utf-8'),
         })
+    conn.close()
     return {"status": "success", "data": res}
 
 
@@ -752,4 +761,33 @@ def getCourseScheduleTable():
             "department": str(val[bytes(config["name"]["学院"], 'ascii')], 'utf-8'),
             "major": str(val[bytes(config["name"]["专业"], 'ascii')], 'utf-8'),
         })
+    conn.close()
     return {"status": "success", "data": res}
+
+
+file_save_path = "/home/hadoop/CourseSelection-HBase/BackEnd/flask-backend/static/"
+
+
+@app.route("/all/upload_file/info_type=<_type>", methods=["GET"])
+def upload_file(_type):
+    conn = happybase.Connection("127.0.0.1", 9090)
+    os.makedirs(file_save_path, exist_ok=True)
+    try:
+        file = request.files.get('file')
+        file_path = os.path.join(file_save_path, file.filename)
+        file.save(file_path)
+        ld = None
+        if _type == "course":
+            ld = LoadData(conn, course=file_path)
+        elif _type == "student":
+            ld = LoadData(conn, student=file_path)
+        if ld is not None:
+            ld.load()
+        else:
+            raise Exception("None Object")
+        conn.close()
+        return {"status": "success", "data": []}
+    except Exception as e:
+        conn.close()
+        e.with_traceback(traceback.print_exc())
+        return {"status": "failed", "data": []}
