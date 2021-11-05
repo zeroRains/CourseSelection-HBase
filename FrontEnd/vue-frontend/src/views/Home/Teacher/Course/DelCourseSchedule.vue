@@ -87,7 +87,7 @@ export default {
       let fileObj = param.files
       let form = new FormData()
       form.append("file", fileObj)
-      console.log("==="*20 + form.get("file"))
+      console.log("==" + form.get("file"), fileObj, form)
       this.$axios.post("all/upload_file/info_type=course", form, {
         headers: {'Content-Type': 'multipart/form-data'}
       })
