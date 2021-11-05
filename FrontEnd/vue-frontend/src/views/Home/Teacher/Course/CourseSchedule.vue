@@ -46,12 +46,9 @@
 </template>
 
 <script>
-import AddSchedule from "@/components/AddSchedule";
 export default {
   name: "CourseSchedule",
-  components: {
-    AddSchedule,
-  },
+
   data() {
     var tableData = [];
     // close.log(tableData);
