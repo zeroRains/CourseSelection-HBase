@@ -84,7 +84,7 @@ export default {
       // console.log(index, row);
     },
     uploadFile(param) {
-      let fileObj = param.files
+      let fileObj = param.file
       let form = new FormData()
       form.append("file", fileObj)
       console.log("==" + form.get("file"), fileObj, form)
