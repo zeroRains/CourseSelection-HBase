@@ -34,6 +34,16 @@
           <el-menu-item index="/course/close">退课</el-menu-item>
           <el-menu-item index="/course/check">已选课程及成绩信息</el-menu-item>
         </el-menu-item-group>
+        <template slot="title">
+          <i class="el-icon-s-order" style="font-size: 20px; color: #fff"></i>
+          <span>Made by</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item>1900301236</el-menu-item>
+          <el-menu-item>谢浚霖</el-menu-item>
+          <el-menu-item>1900300819</el-menu-item>
+          <el-menu-item>卢林军</el-menu-item>
+        </el-menu-item-group>
       </el-submenu>
     </el-menu>
   </el-col>

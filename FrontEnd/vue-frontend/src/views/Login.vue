@@ -1,5 +1,9 @@
 <template>
   <div class="Login">
+    <div>
+      Made by 1900301236谢浚霖、1900300819卢林军
+      <br>
+    </div>
     <div class="main">
       <div class="temp">
         <div style="border-bottom: 1px solid">
