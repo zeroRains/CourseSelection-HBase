@@ -85,6 +85,8 @@ export default {
       console.log("==" + form.get("file"), fileObj, form)
       this.$axios.post("all/upload_file/info_type=course", form, {
         headers: {'Content-Type': 'multipart/form-data'}
+      }).then(res => {
+        location.reload()
       })
     },
     handleRemove(file, fileList) {
