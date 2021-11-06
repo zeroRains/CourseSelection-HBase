@@ -3,6 +3,7 @@ import os
 import traceback
 
 import happybase
+import pandas as pd
 from flask import render_template, request
 
 from app import app
@@ -773,20 +774,19 @@ def upload_file(_type):
     conn = happybase.Connection("127.0.0.1", 9090)
     os.makedirs(file_save_path, exist_ok=True)
     try:
-        file = request.file.get("file")
-        print(file)
+        file = request.files["file"]
+        print(file, request.files, "==="*10)
         file_path = os.path.join(file_save_path, file.filename)
         file.save(file_path)
+        df = pd.read_csv(file_path)
         ld = None
         if _type == "course":
-            ld = LoadData(conn, course=file_path)
+            ld = LoadData(conn, course=df)
         elif _type == "student":
-            ld = LoadData(conn, student=file_path)
+            ld = LoadData(conn, student=df)
+        print(ld)
         if ld is not None:
-            # ld.load()
-            pass
-        else:
-            raise Exception("None Object")
+            ld.load()
         conn.close()
         return {"status": "success", "data": []}
     except Exception as e:
