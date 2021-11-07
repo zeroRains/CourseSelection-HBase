@@ -11,6 +11,7 @@ def getNotSelectedCourse_stu(userid):
     :param userid:
     :return:
     """
+
     conn = happybase.Connection("127.0.0.1", 9090)
     record = conn.table(config["table"]["record"])
     course = conn.table(config["table"]["course"])
