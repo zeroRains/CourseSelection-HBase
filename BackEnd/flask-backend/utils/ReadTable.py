@@ -1,22 +1,23 @@
 import time
+import traceback
 
 import happybase
 import pandas as pd
-from config import config
 from tqdm import tqdm
-import traceback
+
+from utils.config import config_dict
 
 
 # from tqdm import tqdm
 
 
-class LoadData():
+class LoadData:
     def __init__(self, conn, student="", course="", record=""):
         self.student = student
         self.course = course
         self.record = record
         self.conn = conn
-        self.config = config
+        self.config = config_dict
         self.count = 0
 
     def load(self):
@@ -35,19 +36,19 @@ class LoadData():
             self.insert(self.config["table"]["record"], table, cols)
 
     def insert(self, name, table, cols):
-        if name=="student":
+        if name == "student":
             data = self.student
         elif name == "record":
             data = self.record
         elif name == "course":
-            data =self.course
+            data = self.course
         else:
             raise Exception("table name error!")
         for i in tqdm(range(data.shape[0])):
             key = str(data.iloc[i, 0])
-            if name=="record":
-                key= key + "-"+ str(data.iloc[i,1])
-                start  = 2
+            if name == "record":
+                key = key + "-" + str(data.iloc[i, 1])
+                start = 2
             for col in range(data.shape[1]):
                 self.count += 1
                 if self.count % 10 == 0:
@@ -64,6 +65,7 @@ class LoadData():
 
     def finish(self):
         self.conn.close()
+
 
 if __name__ == '__main__':
     student = pd.read_csv("../data/student.csv")

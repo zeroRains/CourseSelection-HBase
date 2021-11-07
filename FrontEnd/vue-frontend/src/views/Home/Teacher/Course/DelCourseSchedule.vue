@@ -1,14 +1,14 @@
 <template>
   <div class="DelCourseSchedule">
     <el-table
-      :header-row-style="{ lineHeight: '30px' }"
-      :data="
+        :header-row-style="{ lineHeight: '30px' }"
+        :data="
         tableData.filter(
           (data) =>
             !search || data.name.toLowerCase().includes(search.toLowerCase())
         )
       "
-      style="width: 100%"
+        style="width: 100%"
     >
       <el-table-column align="center" label="课号" prop="cno">
       </el-table-column>
@@ -25,18 +25,18 @@
       <el-table-column align="center">
         <template slot="header">
           <el-upload
-            class="upload-demo"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-remove="beforeRemove"
-            multiple
-            :limit="3"
-            :on-exceed="handleExceed"
-            :file-list="fileList"
+              class="upload-demo"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              :limit="1"
+              :on-exceed="handleExceed"
+              :http-request="uploadFile"
           >
             <el-button style="font-size: 20px" type="primary"
-              >点击上传</el-button
+            >点击上传
+            </el-button
             >
           </el-upload>
         </template>
@@ -83,6 +83,30 @@ export default {
       // alert(row.credit);
       // console.log(index, row);
     },
+    uploadFile(param) {
+      let fileObj = param.file
+      let form = new FormData()
+      form.append("file", fileObj, fileObj.filename)
+      console.log("==" + form.get("file"), fileObj, form)
+      this.$axios.post("all/upload_file/info_type=course", form, {
+        headers: {'Content-Type': 'multipart/form-data'}
+      }).then(res => {
+        location.reload()
+      })
+    },
+    handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      handleExceed(files, fileList) {
+        // this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+        console.log(files)
+      },
+      beforeRemove(file, fileList) {
+        return "1111"
+      }
   },
 };
 </script>

@@ -5,7 +5,14 @@
       <paths name="hadoop@111.229.52.254:9778 password">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/hadoop/zerorainswrokspace" local="$PROJECT_DIR$" />
+            <mapping deploy="/home/hadoop/CourseSelection-HBase" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="ray@10.0.0.5:22 password">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
